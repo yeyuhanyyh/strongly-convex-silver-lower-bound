@@ -4,7 +4,7 @@ title: "Sharp Ω(κ^(1/p_sil) log(1/ε)) Lower Bound for Gradient Descent on Str
 authors:
   - family-names: Ye
     given-names: Yuhan
-version: "0.3"
+version: "0.4"
 date-released: "2026-11-25"
 url: "https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/"
 repository-code: "https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound"
@@ -16,7 +16,7 @@ preferred-citation:
       given-names: Yuhan
   year: 2026
   month: 11
-  version: "0.3"
+  version: "0.4"
   url: "https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/"
 keywords:
   - gradient descent

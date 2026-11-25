@@ -43,7 +43,7 @@ Altschuler and Parrilo~\cite{AP} showed that their \emph{silver stepsize schedul
 In this paper, we prove that GD with any predetermined sequence of real stepsizes requires $\Omega(\kappa^{1/\psil}\log(1/\varepsilon))$ iterations in the worst case to reduce either the squared distance to the minimizer or function suboptimality by a factor $\varepsilon$. For $0<\varepsilon\le1/2$, this matches the silver upper bound up to an absolute constant.
 \end{abstract}
 
-\section{Introduction}
+\section{Introduction}\label{sec:intro}
 How much can the choice of stepsizes accelerate gradient descent? On an $L$-smooth, $\mu$-strongly convex function $F$ with minimizer $x_*$, GD with stepsizes $h_1,\ldots,h_n$ takes the steps
 \[
  x_t=x_{t-1}-h_t\nabla F(x_{t-1}).
@@ -70,12 +70,17 @@ Thus a uniform reduction of either error by a factor $\varepsilon\in(0,1)$ requi
 
 To see the matching upper bound for both errors, take a silver block of length $s=2^k-1$. Its guarantee $F(x_s)-F(x_*)\le CL\|x_0-x_*\|^2/s^{\psil}$~\cite[Theorem~1]{APconv} and strong convexity show that a block of length $s\asymp\kappa^q$ with a sufficiently large constant halves both errors. Repeating it gives the stated order for $0<\varepsilon\le1/2$.
 
-\paragraph{Proof idea.}
-In the construction of Liu and Ye~\cite[Sections~4--5]{LY}, selected positive steps, called \emph{checkpoints}, activate successive coordinates of the hard function.\footnote{For smooth convex objectives, Ma and Chen~\cite[Theorem~4.1]{MC} chose long steps at which the gradient changes direction. Jung, Cho, and Yun~\cite[Section~2]{JCY} realized these changes with local functions coupling adjacent coordinates.} Between checkpoints, the quadratic term that ensures strong convexity can shrink the active coordinate. To bound the accumulated contraction, we keep track of the positive steps in two ways. A short step contributes its length, while each step longer than $K=\kappa^{1/1000}$ contributes $K$. This gives the sum
+\paragraph{The smooth convex lower bound.}
+Jeong and Hong~\cite[Section~2]{JH} ask how often GD can take a long step and still guarantee small error. The silver schedule suggests an answer. List its distinct stepsizes in increasing order. From one value to the next, $h_t-1$ grows by a factor of $1+\sqrt2$ and the number of occurrences falls by half. They prove a corresponding count for any schedule that guarantees $2(F(x_n)-F(x_*))/\|x_0-x_*\|^2\le n^{-\psil}$ on all $1$-smooth convex objectives. For every $0<s\le n^{\psil}$, at most $Cn s^{-q}$ steps can have size at least $s$. Integrating this count bounds the sum of the positive stepsizes when each is capped at $n^{\psil}$. They then choose a one-dimensional quadratic of curvature at most $n^{-\psil}$ on which the normalized error is at least $c n^{-\psil}$.
+
+To prove the count, they take the steps above a threshold as \emph{checkpoints}.\footnote{Ma and Chen~\cite[Theorem~4.1]{MC} chose long steps at which the gradient changes direction. Jung, Cho, and Yun~\cite[Section~2]{JCY} realized these changes with local functions coupling adjacent coordinates.} Consecutive unselected steps form gaps. Lowering the threshold adds checkpoints and splits these gaps. By constructing a planar GD trajectory in each gap, they relate the size of a checkpoint step to the steps that precede it. This comparison incurs a small error at every checkpoint. The errors matter most when successive splits closely follow the proportions of the silver schedule. In that case a trajectory with four gradient directions lets them pay the comparison error once for several levels of splits~\cite[Section~2.2 and Lemma~6.3]{JH}.
+
+\paragraph{Extending the proof to strongly convex objectives.}
+For $n>\kappa^q$, the one-dimensional quadratics used to finish their proof all have curvature below $1/\kappa$. We therefore start from the strongly convex construction of Liu and Ye~\cite[Sections~4--5]{LY}, in which each checkpoint activates the next coordinate. Its quadratic term can shrink the active coordinate before the next checkpoint is reached. To limit this contraction, we divide the schedule into blocks and choose checkpoints within each block. We bound the number of blocks in terms of the positive stepsizes capped at $K=\kappa^{1/1000}$. Write
 \[
  S_K^+(H)=\sum_{t=1}^n\min\{(h_t)_+,K\},\qquad (h)_+=\max\{h,0\}.
 \]
-The first lemma constructs a hard function when this sum is small enough. The difficulty with negative steps is that they can bring the iterate back to a point where the construction has already specified a gradient. Where the chain cannot pass directly to a new coordinate, we follow three quadratic coordinates of different curvatures. If all three return close to an earlier point, the steps since that visit must have small total absolute length. This leaves enough freedom to start the next part of the trajectory on the same function.
+Lemma~\ref{lem:block} constructs a hard function under a bound on this sum. A stretch of short positive steps may contain no suitable checkpoint, and negative steps can bring the iterate back to a point whose gradient is already fixed. On such stretches we use three quadratic coordinates of different curvatures. Together they allow us to resume the construction at a later checkpoint on the same function.
 
 \begin{lemma}[Constructing the hard function]\label{lem:block}
 Fix $C_*>0$. If $n\ge\kappa^q$ and $S_K^+(H)\le C_*nK^{1-q}$, then for all sufficiently large $\kappa$ there are a $1$-smooth, $\mu$-strongly convex function $F$ and an initial point $x_0\ne x_*$ with
@@ -85,7 +90,7 @@ Fix $C_*>0$. If $n\ge\kappa^q$ and $S_K^+(H)\le C_*nK^{1-q}$, then for all suffi
 where $A$ and the lower cutoff on $\kappa$ depend only on $C_*$.
 \end{lemma}
 
-Which schedules satisfy the hypothesis of Lemma~\ref{lem:block}? It suffices to consider those with $D(H)\le1$ or $E(H)\le1$, since all others already satisfy Theorem~\ref{thm:main}. For such a schedule, we count the positive steps above each threshold and integrate the count to bound $S_K^+(H)$. Jeong and Hong~\cite[Sections~3--7]{JH} obtained such a count for smooth convex objectives. Here we apply their argument on shorter intervals to limit quadratic contraction. To use the worst-case guarantee for the entire schedule, we must realize the trajectories from all these intervals on one strongly convex function.
+It remains to show why a schedule that reduces either error must satisfy the hypothesis of Lemma~\ref{lem:block}. We adapt Jeong and Hong's count on intervals whose total absolute stepsize is small compared with $\kappa$. The hypothesis on $D(H)$ or $E(H)$ applies only at the end of the entire schedule. We therefore join the trajectories from these intervals on one strongly convex function before using the final error to bound $S_K^+(H)$.
 
 \begin{lemma}[Bounding the positive steps]\label{lem:count}
 For some absolute $C_*$ and all sufficiently large $\kappa$, if $n\ge\kappa^q$ and $\min\{D(H),E(H)\}\le1$, then $S_K^+(H)\le C_*nK^{1-q}$.
@@ -103,184 +108,212 @@ Letting $r\to\infty$ proves the theorem for every $n$.
 
 \section{Proof of Lemma~\ref{lem:block}}\label{sec:proof-block}
 
-We adapt the block construction of Liu and Ye~\cite[Sections~4--5]{LY}.
-We use the positive parts \(p_t=(h_t)_+\) to select checkpoints, but run
-GD with the original stepsizes \(h_t\). We first describe what a checkpoint
-does, then show that we can choose enough of them to carry a lower bound
-through the schedule. Appendix~\ref{app:arc} gives the details of the construction.
+Our goal is to construct a function, minimized at zero, on which
+\(\|x_n\|/\|x_0\|\ge e^{-Cn/\kappa^q}\).
+Following Liu and Ye~\cite[Sections~4--5]{LY}, we divide the schedule
+into \(O(n/\kappa^q)\) blocks. We can therefore afford a constant factor
+of loss per block on average. A block may contain many checkpoints, so
+we estimate their combined effect. We choose the checkpoints using the
+positive parts \(p_t=(h_t)_+\). GD takes every step with its original sign.
 
 \paragraph{Transferring excess to the next coordinate.}
 The \emph{gap} before a checkpoint consists of the steps since the preceding
 checkpoint (or initialization), excluding the checkpoint step itself.
-Let \(S\) be its \emph{positive mass}, the sum of \(p_t\) over the gap, and
-let \(b\) be the checkpoint stepsize. At the start of the gap, the input coordinate exceeds its activation
-threshold by \(D>0\), called its \emph{excess}. Suppose the threshold is at
-most \(D/2\), \(S\le\delta\kappa\) for a sufficiently small absolute constant
-\(\delta>0\), and \(b>K\). We construct a local function for which the output
-coordinate crosses its own threshold at the checkpoint. Its excess \(D_+\) satisfies
+Let \(S\) be its \emph{positive mass}, the sum of \(p_t\) over the gap,
+and let \(b\) be the checkpoint stepsize. At the start of the gap, the
+currently active coordinate exceeds its activation threshold by \(D>0\),
+called its \emph{excess}. Suppose the threshold is at most \(D/2\),
+\(S\le\delta\kappa\) for a sufficiently small absolute constant \(\delta>0\),
+and \(b>K\). Appendix~\ref{app:arc} constructs a local function for which
+the next coordinate crosses its own threshold at the checkpoint. Its
+excess \(D_+\) satisfies
 \begin{equation}\label{eq:signed-block-transfer}
  \frac{D_+}{D}\ge\frac{b-8}{c_K(K+S+8)}e^{-C\mu(K+S)},
  \qquad 1\le c_K\le1+C/\log K .
 \end{equation}
-Here \(c_K\) depends only on \(K\), and the output threshold is at most
-\(D_+/2\). Thus the output can serve as the input to the next gap. To see
-why the contraction loss depends only on \(S\), consider a quadratic of
-curvature \(\lambda\ge0\) with \(\lambda S<1\). Over any prefix of the gap,
+Here \(c_K\) depends only on \(K\). The new threshold is at most \(D_+/2\),
+so we can apply the same estimate in the next gap. The fraction in
+\eqref{eq:signed-block-transfer} favors a long checkpoint step after a
+gap of small positive mass. The exponential accounts for quadratic
+contraction during the transfer. To see why only the positive steps enter
+this loss, consider a quadratic of curvature \(\lambda\ge0\) with
+\(\lambda S<1\). Over any prefix of the gap,
 \(\prod_t(1-\lambda h_t)\ge1-\lambda S\), since a negative step has
 multiplier at least one.
 
-\paragraph{Selecting checkpoints.}
-Under the bound on \(S_K^+(H)\) in Lemma~\ref{lem:block}, the block
-partition in Appendix~\ref{app:arc} has \(B=O(n/\kappa^q)\) blocks.
-Within each block we choose a set of stepsizes \(b_i=h_{t_i}>K\) maximizing
-the product of the fractions \((b_i-8)/[c_K(K+S_i+8)]\) in
-\eqref{eq:signed-block-transfer}, where \(S_i\) is the sum of \(p_t\)
-in the gap before \(t_i\), including any steps carried over from an earlier
-block. The empty set has score one. For a nonempty maximizing set,
-\(\sum_i(K+S_i+8)=O(\kappa)\), so the exponential factors in
-\eqref{eq:signed-block-transfer} cost at most a constant factor over this block.
+\paragraph{Choosing checkpoints within a block.}
+Use the partition in Appendix~\ref{app:arc}. Under the hypothesis on
+\(S_K^+(H)\), it has \(B=O(n/\kappa^q)\) blocks. Within each block we
+maximize the product of the fractions in \eqref{eq:signed-block-transfer}
+over sets of checkpoints with stepsizes \(b_i>K\). Write \(S_i\) for
+the positive mass of the gap before checkpoint \(i\), including any steps
+carried over from earlier blocks. The empty set has product one, so the
+maximizing product is at least one. For a nonempty maximizing set, the
+block estimates give \(\sum_i(K+S_i+8)=O(\kappa)\). Since \(\mu=1/\kappa\),
+the exponential factors multiply to at least \(e^{-C}\).
+Thus the last checkpoint of a complete maximizing set retains at least
+a constant fraction of the excess entering its first gap.
 
-If the maximizing set is empty, we carry the unselected steps forward.
-When their positive parts sum to at least a fixed \(S_0\asymp\kappa\),
-we add a checkpoint, which we call a \emph{repair}. We choose a largest
-step in the shortest suffix whose positive parts sum to more than \(S_0/8\).
-The partition and this rule ensure \(S\le\delta\kappa\) for every gap and
-for the tail after the final checkpoint.
+If several blocks select no checkpoint, their unselected positive steps
+can accumulate until the next gap is too long for \eqref{eq:signed-block-transfer}.
+We therefore perform a \emph{repair} whenever a block selects no checkpoint
+and the positive mass since the latest checkpoint reaches a fixed
+\(S_0\asymp\kappa\). We take the shortest suffix of this tail with
+positive mass greater than \(S_0/8\) and select a largest step in it.
+Any choice in this suffix leaves at most \(S_0/8\) positive mass through
+the end of the current block. Among these steps we choose a largest one
+because the numerator in \eqref{eq:signed-block-transfer} is \(b-8\). The partition and this
+rule ensure \(S\le\delta\kappa\) for every gap and for the final tail.
 
-\paragraph{Handling short repair steps.}
-Call a repair \emph{exceptional} if steps \(p_t\le K\) contribute more
-than \(S_0/16\) in its chosen suffix. The suffixes are disjoint, so the
-number \(J\) of exceptional repairs satisfies
+\paragraph{Bounding the loss at repairs.}
+To pass excess at the repair checkpoint itself, \eqref{eq:signed-block-transfer}
+requires \(b>K\). If steps of size at most \(K\) contribute at most
+\(S_0/16\) in the chosen
+suffix, larger steps must contribute more than \(S_0/16\). The counts of
+large steps in Appendix~\ref{app:arc} then give a lower bound on the
+largest step in the suffix. Applying \eqref{eq:signed-block-transfer} at
+these repairs costs \(O(B)\) in log excess over all of them.
+
+Call the remaining repairs \emph{exceptional}. Each uses more than \(S_0/16\)
+positive mass from steps of size at most \(K\). These steps count in full
+toward \(S_K^+(H)\), and the repair suffixes are disjoint. Thus the number
+\(J\) of exceptional repairs satisfies
 \begin{equation}\label{eq:signed-exception-count}
  J\le\frac{16}{S_0}\sum_{t:p_t\le K}p_t
    \le C\frac{n}{\kappa^q}\left(\frac K\kappa\right)^{1-q}.
 \end{equation}
-In the other repairs, steps larger than \(K\) contribute more than
-\(S_0/16\). The block estimates bound how many steps can exceed any
-given size. Applied to this suffix, they force the largest step to be
-large enough that these repairs together cost at most \(O(B)\) in
-logarithmic loss (Appendix~\ref{app:arc}).
+At such a repair the selected step may be too short to activate the next
+coordinate. We keep the distance large until a suitable checkpoint or the
+end of the schedule. As possible boundaries take \(0,n+1\) and all
+checkpoints of size in \([4,\kappa/4]\) except the exceptional repairs. Mark each open interval between consecutive boundaries
+that contains an exceptional repair, and reserve its boundary checkpoints
+for switching trajectories. There are at most \(J\) marked intervals.
 
-At an exceptional repair the selected step may be too short to activate
-the next coordinate. We continue on three quadratic coordinates until a
-suitable checkpoint instead. More precisely, take the nonexceptional
-checkpoints of size in \([4,\kappa/4]\) as possible boundaries, along
-with the endpoints \(0,n+1\). Mark an open interval between consecutive
-boundaries if it contains an exceptional repair. There are at most \(J\)
-such intervals. Reserve their boundary checkpoints for switching, using
-each shared boundary once. On each marked interval use curvatures
-\(12\mu,16\mu,20\mu\). Apart from checkpoints larger than \(\kappa/4\),
-every positive step there lies in a gap or an exceptional repair tail,
-each of positive mass at most \(\delta\kappa\). A checkpoint larger than
-\(\kappa/4\) at least doubles the distance on each quadratic, enough
-to pay for the preceding gap.
-Negative steps only increase the distance.
+On a marked interval we follow three quadratic coordinates of curvatures
+\(12\mu,16\mu,20\mu\). A negative step can only increase their magnitudes.
+At a checkpoint larger than \(\kappa/4\), all three magnitudes at least
+double, enough to offset the contraction in the preceding gap. The
+remaining positive steps lie in gaps or exceptional repair tails of
+positive mass at most \(\delta\kappa\). Each gap whose contraction has
+yet to be accounted for ends at an exceptional repair or at the end of a
+marked interval. Each costs \(O(1)\) in log distance, including the step
+at an exceptional repair. Since there are at most \(J\) marked intervals,
+the total loss on them is \(O(J)\).
 
-\paragraph{Joining the trajectories on one function.}
-Why use three curvatures? Signed steps can bring a single quadratic
-coordinate back to an earlier value. We choose three equally spaced
-curvatures with no zero of \(1-\lambda h_t\) between them, including
-the endpoints. On any suffix containing a nonzero step, the middle
-absolute multiplier exceeds the geometric mean of the two outer
-multipliers. The quantitative form of this inequality shows that an earlier query close to
-the last one must be separated from it by steps of small total absolute
-length. At a reserved checkpoint this lets us start the next portion
-at a scaled copy of its prescribed initial point while preserving strong
-convexity and smoothness. For a chain of local functions we use the same
-three coordinates in its final gap. Appendix~\ref{app:arc} gives the
-construction on a single objective and the switch estimate~\eqref{eq:joins-gain}.
+\paragraph{Resuming the construction on the same function.}
+On a single quadratic a positive step followed by a negative one can
+return to the same point. Prescribing a new gradient there would also
+change the earlier update. The three curvatures let us distinguish the
+query at a reserved checkpoint from earlier queries. To see why, write
+\(P(\lambda)=\prod_t(1-\lambda h_t)\) for the multiplier over the steps
+between two queries. No factor vanishes between the chosen curvatures,
+including the endpoints. If any of the steps is nonzero, the middle value
+of \(|P|\) exceeds the geometric mean of its two outer values.
+Appendix~\ref{app:arc} bounds this difference from below. If all three
+coordinates return close to their earlier values, the steps since that
+visit must have small total absolute length. We can then modify the
+function near the reserved query so that the checkpoint step reaches the prescribed initial
+point of the next trajectory at a controlled scale. We use the same three
+coordinates in the last gap of a chain when that chain is followed by a
+marked interval. The resulting trajectory is GD on one fixed strongly
+convex objective throughout.
 
-Whole maximizing sets and nonexceptional repairs together cost \(O(B)\)
-in logarithmic loss. Reserving boundaries cuts at most \(O(J)\) maximizing
-sets, at a cost of \(O(\log^2\kappa)\) per fragment. Including at most
-\(2J\) switches, the bounds in Appendix~\ref{app:arc} give
+It remains to count the losses. Along a chain of local functions, the last
+gap keeps the output at least a constant times the excess at its last
+checkpoint, since the positive mass of that gap is at most \(\delta\kappa\)
+(Appendix~\ref{app:arc}). Complete maximizing sets and nonexceptional
+repairs together cost \(O(B)\) in log distance. Reserving boundaries cuts
+at most \(O(J)\) maximizing sets, at a cost of \(O(\log^2\kappa)\) per
+fragment. There are at most \(2J\) switches, with a shared boundary used
+only once. Including their cost from \eqref{eq:joins-gain} gives
 \[
  -\log(\|x_n\|/\|x_0\|)
  \le C\{B+J\log^2\kappa+J\log(1+n/J)\}=O(n/\kappa^q),
 \]
-where the last term is zero for \(J=0\). For the equality, use
-\eqref{eq:signed-exception-count}, \(K=\kappa^{1/1000}\), and the
-monotonicity of \(x\log(1+n/x)\). Our objective is minimized at zero,
-so this proves Lemma~\ref{lem:block}.
+where \(J\log(1+n/J)=0\) for \(J=0\). Indeed,
+\eqref{eq:signed-exception-count} saves a fixed power of \(\kappa\)
+because \(K=\kappa^{1/1000}\), and \(x\log(1+n/x)\) is increasing.
+Exponentiating proves Lemma~\ref{lem:block}.
 \section{Proof of Lemma~\ref{lem:count}}\label{sec:proof-count}
 
-We prove the bound on \(S_K^+(H)\) by counting positive steps above each
-threshold. Jeong and Hong~\cite[Sections~3--7]{JH} use this approach for
-smooth convex objectives. Here we first divide the schedule into intervals
-whose total absolute stepsize is small relative to \(\kappa\). We construct
-a trajectory for each interval and realize all these trajectories on one
-strongly convex function. This lets us use the hypothesis on the final
-error of the whole schedule.
+A positive step of size \(h\) contributes to the count at every threshold
+between \(0\) and \(\min\{h,K\}\). Integrating the count therefore gives
+exactly \(S_K^+(H)\). We first use quadratics to bound how many steps of
+either sign have very large magnitude. This lets us partition the other
+steps into intervals on which quadratic contraction is small. On those
+intervals we need a sharper count for positive steps, with exponent \(q\)
+in place of the exponent \(1/2\) supplied by quadratics.
 
 \paragraph{Cutting at large steps.}
 On \(f(x)=\lambda x^2/2\), both error ratios equal \(|P(\lambda)|^2\)
-for \(P(z)=\prod_{j=1}^n(1-h_jz)\). We call the schedule stable if
-at least one of its two worst-case final error ratios is at most one.
+for \(P(z)=\prod_{j=1}^n(1-h_j z)\). We call the schedule \emph{stable}
+if at least one of its two worst-case final error ratios is at most one.
 By hypothesis \(H\) is stable, so \(|P|\le1\) on \([\mu,1]\).
 For \(1\le r\le\kappa\) it follows that
 \begin{equation}\label{eq:count-quadratic}
  \sum_j\log(1+h_j^2/r^2)=2\log|P(\mathrm i/r)|\le Cn/\sqrt r .
 \end{equation}
-To see this, rescale \([\mu,1]\) affinely to \([-1,1]\). The image of
-\(\mathrm i/r\) is \(z=-1+O(1/r)\), since \(\mu=1/\kappa\le1/r\). Writing
-\(z=(w+w^{-1})/2\) with \(|w|\ge1\) gives \(|w|\le1+C/\sqrt r\).
+Indeed, after rescaling \([\mu,1]\) affinely to \([-1,1]\), the image of
+\(\mathrm i/r\) is \(z=-1+O(1/r)\), since \(\mu\le1/r\).
+Writing \(z=(w+w^{-1})/2\) with \(|w|\ge1\) gives \(|w|\le1+C/\sqrt r\).
 The maximum principle on the exterior disk, applied to the transformed
 polynomial divided by \(w^n\), gives \(|P(\mathrm i/r)|\le |w|^n\).
 
-Set \(\hat h_j=h_j/4\). A step of size \(h_j\) on \(F/4\) then gives
-the same iterate as a step of size \(\hat h_j\) on \(F\). This scaling
-leaves room to join consecutive intervals while preserving the required
-smoothness and strong convexity. Remove all steps with \(|\hat h_j|>K^2\).
-In each remaining run, start a new interval whenever
-the next step would bring the sum of absolute stepsizes above \(M=2K^2\).
-Let \(\mathcal I\) be the collection of retained intervals. Then
+For the local constructions write \(\hat h_j=h_j/4\). A step of size
+\(\hat h_j\) on \(F\) equals a step of size \(h_j\) on \(F/4\). This
+scaling leaves room to join the local functions while preserving the
+curvature bounds. Set aside the steps with \(|\hat h_j|>K^2\) when forming
+the partition. In each remaining run, start a new interval whenever the
+next step would bring the sum of absolute stepsizes above \(M=2K^2\).
+Writing \(\mathcal I\) for these intervals, we have
 \begin{equation}\label{eq:count-partition}
  \#\{j:|\hat h_j|>K^2\}+|\mathcal I|\le Cn/K .
 \end{equation}
-In fact \eqref{eq:count-quadratic} at \(4r\) gives
-\(\#\{j:|\hat h_j|\ge r\}\le Cn/\sqrt r\) for \(1\le r\le K^2\).
-Integrating up to \(K^2\) bounds the sum of the retained absolute stepsizes
-by \(CnK\).
-Each run contributes at most one final interval, and every other
-interval has absolute mass greater than \(K^2\). This gives
-\eqref{eq:count-partition}, since \(n\ge\kappa^q\ge K\).
+Indeed, each step with \(|\hat h_j|\ge r\) contributes at least \(\log 2\)
+to the sum in \eqref{eq:count-quadratic} applied at \(4r\). There are
+therefore at most \(Cn/\sqrt r\) such steps for \(1\le r\le K^2\).
+At \(r=K^2\) this bounds the number set aside. Integrating up to \(K^2\)
+bounds the total absolute stepsize of the retained steps by \(CnK\).
+Except for the last interval of each run, every interval has absolute
+stepsize sum greater than \(K^2\). These bounds give \eqref{eq:count-partition}.
 
-\paragraph{Counting the steps above a threshold.}
+\paragraph{Bounding the positive steps.}
 Set \(s=K/4\) and \(t_j=\min\{\hat h_j,s\}\), so that
-\(S_K^+(H)=4\sum_j(t_j)_+\). For each retained interval \(I\), let
+\(S_K^+(H)=4\sum_j(t_j)_+\). For each retained interval \(I\), define
 \[
  W_I=\sup_{z>0}z^q\#\{j\in I:t_j\ge z\}.
 \]
-The construction in Appendix~\ref{app:tests} gives a single \(1\)-smooth,
-\(\mu\)-strongly convex function \(f\) with minimizer \(0\) and an initial
-point \(x_0\ne0\) for which GD with the original stepsizes satisfies
+This is the smallest number for which the count at every threshold \(z>0\)
+is at most \(W_I z^{-q}\). Integrating gives
+\[
+ \sum_{j\in I}(t_j)_+
+ =\int_0^s\#\{j\in I:t_j\ge z\}\,dz
+ \le\frac{s^{1-q}}{1-q}\,W_I .
+\]
+The steps set aside contribute at most \(K\) each to \(S_K^+(H)\), hence
+\(O(n)\) in all by \eqref{eq:count-partition}. It remains to show that
+\(\sum_{I\in\mathcal I}W_I\le Cn\).
+
+Within each interval we use the checkpoint comparisons reviewed in
+Section~\ref{sec:intro}. Different intervals can require different
+thresholds. Stability applies only to the final error of the full
+schedule, so a separate hard function for each interval would give us
+no bound on the sum of the \(W_I\). Appendix~\ref{app:tests} joins the
+corresponding trajectories, including the steps set aside in forming the
+partition. It constructs one \(1\)-smooth, \(\mu\)-strongly convex
+function \(f\), minimized at zero, and an initial point \(x_0\ne0\) for
+which GD with the original stepsizes satisfies
 \begin{equation}\label{eq:count-joint}
  \log\frac{\|x_n\|}{\|x_0\|}
  \ge \frac{c}{K^q}\sum_{I\in\mathcal I}W_I-\frac{Cn}{K^q}.
 \end{equation}
-To obtain this bound, we use steps above a threshold as checkpoints.
-A planar trajectory at each checkpoint relates its stepsize to the
-steps in the preceding gap. When the planar estimate is close to
-equality at several consecutive splits, we use Jeong and Hong's
-four-direction construction to obtain a stronger bound across these
-gaps. Each interval may require a different
-threshold and different trajectories. We join them so that their norm
-ratios multiply over the original schedule.
 
-If \(D(H)\le1\), the left side of \eqref{eq:count-joint} is at most zero.
-If \(E(H)\le1\), then
+We can now use stability on this function. If \(D(H)\le1\), the left
+side of \eqref{eq:count-joint} is at most zero. If \(E(H)\le1\), then
 \(\mu\|x_n\|^2/2\le f(x_n)-f(0)\le f(x_0)-f(0)\le\|x_0\|^2/2\),
-so it is at most \(\frac12\log\kappa\). Since \(n\ge\kappa^q\) and
-\(K=\kappa^{1/1000}\), either case gives \(\sum_I W_I\le Cn\).
-Integrating the count now yields
-\begin{equation*}
- \sum_{j\in I}(t_j)_+
- =\int_0^s\#\{j\in I:t_j\ge z\}\,dz
- \le\frac{s^{1-q}}{1-q}W_I .
-\end{equation*}
-The removed steps contribute at most \(K\) each to \(S_K^+(H)\).
-By \eqref{eq:count-partition} their total contribution is \(O(n)\),
-which proves \(S_K^+(H)\le CnK^{1-q}\).
+so it is at most \(\tfrac12\log\kappa\). In either case we obtain
+\(\sum_I W_I\le Cn\), since \(K^q\log\kappa=O(n)\) for \(n\ge\kappa^q\).
+The integral above now gives \(S_K^+(H)\le CnK^{1-q}\), as required.
 
 \appendix
 \section{Proofs for the hard function and the stepsize count}\label{app:geometry}
