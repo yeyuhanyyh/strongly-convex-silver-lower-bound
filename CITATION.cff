@@ -1,13 +1,23 @@
 cff-version: 1.2.0
 message: "Please cite the manuscript and include the version tag or commit hash."
 title: "Sharp Ω(κ^(1/p_sil) log(1/ε)) Lower Bound for Gradient Descent on Strongly Convex Objectives"
-type: generic
 authors:
   - family-names: Ye
     given-names: Yuhan
-version: "0.2"
-date-released: 2026-11-25
-url: "https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound"
+version: "0.3"
+date-released: "2026-11-25"
+url: "https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/"
+repository-code: "https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound"
+preferred-citation:
+  type: unpublished
+  title: "Sharp Ω(κ^(1/p_sil) log(1/ε)) Lower Bound for Gradient Descent on Strongly Convex Objectives"
+  authors:
+    - family-names: Ye
+      given-names: Yuhan
+  year: 2026
+  month: 11
+  version: "0.3"
+  url: "https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/"
 keywords:
   - gradient descent
   - convex optimization

@@ -71,13 +71,11 @@ Thus a uniform reduction of either error by a factor $\varepsilon\in(0,1)$ requi
 To see the matching upper bound for both errors, take a silver block of length $s=2^k-1$. Its guarantee $F(x_s)-F(x_*)\le CL\|x_0-x_*\|^2/s^{\psil}$~\cite[Theorem~1]{APconv} and strong convexity show that a block of length $s\asymp\kappa^q$ with a sufficiently large constant halves both errors. Repeating it gives the stated order for $0<\varepsilon\le1/2$.
 
 \paragraph{Proof idea.}
-In the construction of Liu and Ye~\cite[Sections~4--5]{LY}, selected positive steps, called \emph{checkpoints}, activate successive coordinates of the hard function.\footnote{For smooth convex objectives, Ma and Chen~\cite[Theorem~4.1]{MC} chose long steps at which the gradient changes direction. Jung, Cho, and Yun~\cite[Section~2]{JCY} realized these changes with local functions coupling adjacent coordinates.} Between checkpoints, the quadratic term that ensures strong convexity can shrink the active coordinate. We therefore keep track of the total length of the short positive steps and the number of long ones. Fix $K=\kappa^{1/1000}$ and write
+In the construction of Liu and Ye~\cite[Sections~4--5]{LY}, selected positive steps, called \emph{checkpoints}, activate successive coordinates of the hard function.\footnote{For smooth convex objectives, Ma and Chen~\cite[Theorem~4.1]{MC} chose long steps at which the gradient changes direction. Jung, Cho, and Yun~\cite[Section~2]{JCY} realized these changes with local functions coupling adjacent coordinates.} Between checkpoints, the quadratic term that ensures strong convexity can shrink the active coordinate. To bound the accumulated contraction, we keep track of the positive steps in two ways. A short step contributes its length, while each step longer than $K=\kappa^{1/1000}$ contributes $K$. This gives the sum
 \[
  S_K^+(H)=\sum_{t=1}^n\min\{(h_t)_+,K\},\qquad (h)_+=\max\{h,0\}.
 \]
-Lemma~\ref{lem:block} constructs a hard function when this sum is small enough. The difficulty with signed steps is that a negative step can bring the iterate back to an earlier point. Where the chain cannot pass to a new coordinate, we use three quadratic coordinates of different curvatures. Together they distinguish the iterate at the next checkpoint from earlier iterates, except for visits separated by steps of very small total absolute length. This lets us start the next part of the chain on the same function.
-
-Lemma~\ref{lem:count} proves the required bound on $S_K^+(H)$. We adapt Jeong and Hong's argument for smooth convex objectives~\cite[Sections~3--7]{JH}. They count steps above a varying threshold and use explicit GD trajectories to bound this count. In the strongly convex setting we apply the count on shorter intervals and join their trajectories on one objective. A tool for this last step comes from the performance estimation framework of Drori and Teboulle~\cite{DT}. The interpolation criterion of Taylor, Hendrickx, and Glineur~\cite[Corollary~1]{THG} characterizes which finite lists of values and gradients come from one smooth convex function. At a switch we use these inequalities to replace part of the objective by a quadratic on a small ball while preserving its values and gradients outside a larger ball (Appendix~\ref{app:arc}).
+The first lemma constructs a hard function when this sum is small enough. The difficulty with negative steps is that they can bring the iterate back to a point where the construction has already specified a gradient. Where the chain cannot pass directly to a new coordinate, we follow three quadratic coordinates of different curvatures. If all three return close to an earlier point, the steps since that visit must have small total absolute length. This leaves enough freedom to start the next part of the trajectory on the same function.
 
 \begin{lemma}[Constructing the hard function]\label{lem:block}
 Fix $C_*>0$. If $n\ge\kappa^q$ and $S_K^+(H)\le C_*nK^{1-q}$, then for all sufficiently large $\kappa$ there are a $1$-smooth, $\mu$-strongly convex function $F$ and an initial point $x_0\ne x_*$ with
@@ -87,12 +85,16 @@ Fix $C_*>0$. If $n\ge\kappa^q$ and $S_K^+(H)\le C_*nK^{1-q}$, then for all suffi
 where $A$ and the lower cutoff on $\kappa$ depend only on $C_*$.
 \end{lemma}
 
+Which schedules satisfy the hypothesis of Lemma~\ref{lem:block}? It suffices to consider those with $D(H)\le1$ or $E(H)\le1$, since all others already satisfy Theorem~\ref{thm:main}. For such a schedule, we count the positive steps above each threshold and integrate the count to bound $S_K^+(H)$. Jeong and Hong~\cite[Sections~3--7]{JH} obtained such a count for smooth convex objectives. Here we apply their argument on shorter intervals to limit quadratic contraction. To use the worst-case guarantee for the entire schedule, we must realize the trajectories from all these intervals on one strongly convex function.
+
 \begin{lemma}[Bounding the positive steps]\label{lem:count}
 For some absolute $C_*$ and all sufficiently large $\kappa$, if $n\ge\kappa^q$ and $\min\{D(H),E(H)\}\le1$, then $S_K^+(H)\le C_*nK^{1-q}$.
 \end{lemma}
 
+Both lemmas require joining trajectories. Here we borrow an idea from performance estimation~\cite{DT} and work directly with prescribed function values and gradients. The criterion of Taylor, Hendrickx, and Glineur~\cite[Corollary~1]{THG} specifies when a finite collection of values and gradients comes from a single smooth convex function. At a switch we keep the old function outside a ball and prescribe a quadratic on a smaller ball. Appendix~\ref{app:arc} verifies the interpolation inequalities on these two regions and applies the extension theorem of Azagra and Mudarra~\cite[Theorem~1.3]{AM}.
+
 \begin{proof}[Proof of Theorem~\ref{thm:main}]
-It suffices to consider $\min\{D(H),E(H)\}\le1$. Repeat $H$ a total of $r$ times. The resulting schedule $H^r$ satisfies $D(H^r)\le D(H)^r$ and $E(H^r)\le E(H)^r$. For $rn\ge\kappa^q$, Lemmas~\ref{lem:count} and~\ref{lem:block} give $D(H^r)\ge e^{-2Arn/\kappa^q}$. Strong convexity at $x_{rn}$ and smoothness at $x_0$ give $E(H^r)\ge D(H^r)/\kappa$. Hence
+It suffices to consider $\min\{D(H),E(H)\}\le1$. Let $H^r$ be the schedule obtained by repeating $H$ a total of $r$ times. Each repetition starts at the previous endpoint, so the worst-case ratios satisfy $D(H^r)\le D(H)^r$ and $E(H^r)\le E(H)^r$. Choose $r$ large enough that $rn\ge\kappa^q$. Lemma~\ref{lem:count} then gives the hypothesis of Lemma~\ref{lem:block} for $H^r$, so $D(H^r)\ge e^{-2Arn/\kappa^q}$. Strong convexity at $x_{rn}$ and smoothness at $x_0$ give $E(H^r)\ge D(H^r)/\kappa$. Taking $r$th roots gives
 \[
  \min\{D(H),E(H)\}\ge \kappa^{-1/r}\exp(-2An/\kappa^q).
 \]
@@ -101,38 +103,363 @@ Letting $r\to\infty$ proves the theorem for every $n$.
 
 \section{Proof of Lemma~\ref{lem:block}}\label{sec:proof-block}
 
-We adapt the blockwise checkpoint selection of Liu and Ye~\cite[Sections~4--5]{LY}.
-We select checkpoints using the positive parts \(p_t=(h_t)_+\) and run GD with
-the original stepsizes \(h_t\). If the sum of the unselected positive stepsizes
-becomes too large, we add a checkpoint, a procedure called a \emph{repair}.
-Usually this checkpoint activates a new coordinate. When the step it selects
-is too short, we use three quadratic coordinates until the chain can resume.
+We adapt the block construction of Liu and Ye~\cite[Sections~4--5]{LY}.
+We use the positive parts \(p_t=(h_t)_+\) to select checkpoints, but run
+GD with the original stepsizes \(h_t\). We first describe what a checkpoint
+does, then show that we can choose enough of them to carry a lower bound
+through the schedule. Appendix~\ref{app:arc} gives the details of the construction.
 
-\paragraph{Transfer at a checkpoint.}
-Call the sum of \(p_t\) over an interval its \emph{positive mass}.
-Consider a checkpoint of stepsize \(b\). Its \emph{gap} consists of the steps
-after the preceding checkpoint (or from initialization) and strictly before
-this one. Let \(S\) be the positive mass of the gap. At its start, the input
-coordinate exceeds its activation threshold by \(D>0\). Suppose that threshold
-is at most \(D/2\), \(S\le\delta\kappa\) for a sufficiently small absolute
-constant \(\delta>0\), and \(b>K\). The construction in Appendix~\ref{app:arc}
-makes the output coordinate exceed its threshold by \(D_+>0\) at the checkpoint, with
+\paragraph{Transferring excess to the next coordinate.}
+The \emph{gap} before a checkpoint consists of the steps since the preceding
+checkpoint (or initialization), excluding the checkpoint step itself.
+Let \(S\) be its \emph{positive mass}, the sum of \(p_t\) over the gap, and
+let \(b\) be the checkpoint stepsize. At the start of the gap, the input coordinate exceeds its activation
+threshold by \(D>0\), called its \emph{excess}. Suppose the threshold is at
+most \(D/2\), \(S\le\delta\kappa\) for a sufficiently small absolute constant
+\(\delta>0\), and \(b>K\). We construct a local function for which the output
+coordinate crosses its own threshold at the checkpoint. Its excess \(D_+\) satisfies
 \begin{equation}\label{eq:signed-block-transfer}
  \frac{D_+}{D}\ge\frac{b-8}{c_K(K+S+8)}e^{-C\mu(K+S)},
- \qquad 1\le c_K\le1+C/\log K.
+ \qquad 1\le c_K\le1+C/\log K .
 \end{equation}
-The coefficient \(c_K\) depends only on \(K\). The outgoing threshold is at most \(D_+/2\), as required for the next gap.
-The dependence on positive mass comes from the quadratic term. For
-\(\lambda\ge0\) with \(\lambda S<1\), every prefix of the gap satisfies
-\(\prod_t(1-\lambda h_t)\ge1-\lambda S\), since each negative step has
-multiplier at least one. The component is \(4\mu\)-strongly convex and
-\(1/4\)-smooth, leaving room to join trajectories later in the proof.
+Here \(c_K\) depends only on \(K\), and the output threshold is at most
+\(D_+/2\). Thus the output can serve as the input to the next gap. To see
+why the contraction loss depends only on \(S\), consider a quadratic of
+curvature \(\lambda\ge0\) with \(\lambda S<1\). Over any prefix of the gap,
+\(\prod_t(1-\lambda h_t)\ge1-\lambda S\), since a negative step has
+multiplier at least one.
 
 \paragraph{Selecting checkpoints.}
+Under the bound on \(S_K^+(H)\) in Lemma~\ref{lem:block}, the block
+partition in Appendix~\ref{app:arc} has \(B=O(n/\kappa^q)\) blocks.
+Within each block we choose a set of stepsizes \(b_i=h_{t_i}>K\) maximizing
+the product of the fractions \((b_i-8)/[c_K(K+S_i+8)]\) in
+\eqref{eq:signed-block-transfer}, where \(S_i\) is the sum of \(p_t\)
+in the gap before \(t_i\), including any steps carried over from an earlier
+block. The empty set has score one. For a nonempty maximizing set,
+\(\sum_i(K+S_i+8)=O(\kappa)\), so the exponential factors in
+\eqref{eq:signed-block-transfer} cost at most a constant factor over this block.
+
+If the maximizing set is empty, we carry the unselected steps forward.
+When their positive parts sum to at least a fixed \(S_0\asymp\kappa\),
+we add a checkpoint, which we call a \emph{repair}. We choose a largest
+step in the shortest suffix whose positive parts sum to more than \(S_0/8\).
+The partition and this rule ensure \(S\le\delta\kappa\) for every gap and
+for the tail after the final checkpoint.
+
+\paragraph{Handling short repair steps.}
+Call a repair \emph{exceptional} if steps \(p_t\le K\) contribute more
+than \(S_0/16\) in its chosen suffix. The suffixes are disjoint, so the
+number \(J\) of exceptional repairs satisfies
+\begin{equation}\label{eq:signed-exception-count}
+ J\le\frac{16}{S_0}\sum_{t:p_t\le K}p_t
+   \le C\frac{n}{\kappa^q}\left(\frac K\kappa\right)^{1-q}.
+\end{equation}
+In the other repairs, steps larger than \(K\) contribute more than
+\(S_0/16\). The block estimates bound how many steps can exceed any
+given size. Applied to this suffix, they force the largest step to be
+large enough that these repairs together cost at most \(O(B)\) in
+logarithmic loss (Appendix~\ref{app:arc}).
+
+At an exceptional repair the selected step may be too short to activate
+the next coordinate. We continue on three quadratic coordinates until a
+suitable checkpoint instead. More precisely, take the nonexceptional
+checkpoints of size in \([4,\kappa/4]\) as possible boundaries, along
+with the endpoints \(0,n+1\). Mark an open interval between consecutive
+boundaries if it contains an exceptional repair. There are at most \(J\)
+such intervals. Reserve their boundary checkpoints for switching, using
+each shared boundary once. On each marked interval use curvatures
+\(12\mu,16\mu,20\mu\). Apart from checkpoints larger than \(\kappa/4\),
+every positive step there lies in a gap or an exceptional repair tail,
+each of positive mass at most \(\delta\kappa\). A checkpoint larger than
+\(\kappa/4\) at least doubles the distance on each quadratic, enough
+to pay for the preceding gap.
+Negative steps only increase the distance.
+
+\paragraph{Joining the trajectories on one function.}
+Why use three curvatures? Signed steps can bring a single quadratic
+coordinate back to an earlier value. We choose three equally spaced
+curvatures with no zero of \(1-\lambda h_t\) between them, including
+the endpoints. On any suffix containing a nonzero step, the middle
+absolute multiplier exceeds the geometric mean of the two outer
+multipliers. The quantitative form of this inequality shows that an earlier query close to
+the last one must be separated from it by steps of small total absolute
+length. At a reserved checkpoint this lets us start the next portion
+at a scaled copy of its prescribed initial point while preserving strong
+convexity and smoothness. For a chain of local functions we use the same
+three coordinates in its final gap. Appendix~\ref{app:arc} gives the
+construction on a single objective and the switch estimate~\eqref{eq:joins-gain}.
+
+Whole maximizing sets and nonexceptional repairs together cost \(O(B)\)
+in logarithmic loss. Reserving boundaries cuts at most \(O(J)\) maximizing
+sets, at a cost of \(O(\log^2\kappa)\) per fragment. Including at most
+\(2J\) switches, the bounds in Appendix~\ref{app:arc} give
+\[
+ -\log(\|x_n\|/\|x_0\|)
+ \le C\{B+J\log^2\kappa+J\log(1+n/J)\}=O(n/\kappa^q),
+\]
+where the last term is zero for \(J=0\). For the equality, use
+\eqref{eq:signed-exception-count}, \(K=\kappa^{1/1000}\), and the
+monotonicity of \(x\log(1+n/x)\). Our objective is minimized at zero,
+so this proves Lemma~\ref{lem:block}.
+\section{Proof of Lemma~\ref{lem:count}}\label{sec:proof-count}
+
+We prove the bound on \(S_K^+(H)\) by counting positive steps above each
+threshold. Jeong and Hong~\cite[Sections~3--7]{JH} use this approach for
+smooth convex objectives. Here we first divide the schedule into intervals
+whose total absolute stepsize is small relative to \(\kappa\). We construct
+a trajectory for each interval and realize all these trajectories on one
+strongly convex function. This lets us use the hypothesis on the final
+error of the whole schedule.
+
+\paragraph{Cutting at large steps.}
+On \(f(x)=\lambda x^2/2\), both error ratios equal \(|P(\lambda)|^2\)
+for \(P(z)=\prod_{j=1}^n(1-h_jz)\). We call the schedule stable if
+at least one of its two worst-case final error ratios is at most one.
+By hypothesis \(H\) is stable, so \(|P|\le1\) on \([\mu,1]\).
+For \(1\le r\le\kappa\) it follows that
+\begin{equation}\label{eq:count-quadratic}
+ \sum_j\log(1+h_j^2/r^2)=2\log|P(\mathrm i/r)|\le Cn/\sqrt r .
+\end{equation}
+To see this, rescale \([\mu,1]\) affinely to \([-1,1]\). The image of
+\(\mathrm i/r\) is \(z=-1+O(1/r)\), since \(\mu=1/\kappa\le1/r\). Writing
+\(z=(w+w^{-1})/2\) with \(|w|\ge1\) gives \(|w|\le1+C/\sqrt r\).
+The maximum principle on the exterior disk, applied to the transformed
+polynomial divided by \(w^n\), gives \(|P(\mathrm i/r)|\le |w|^n\).
+
+Set \(\hat h_j=h_j/4\). A step of size \(h_j\) on \(F/4\) then gives
+the same iterate as a step of size \(\hat h_j\) on \(F\). This scaling
+leaves room to join consecutive intervals while preserving the required
+smoothness and strong convexity. Remove all steps with \(|\hat h_j|>K^2\).
+In each remaining run, start a new interval whenever
+the next step would bring the sum of absolute stepsizes above \(M=2K^2\).
+Let \(\mathcal I\) be the collection of retained intervals. Then
+\begin{equation}\label{eq:count-partition}
+ \#\{j:|\hat h_j|>K^2\}+|\mathcal I|\le Cn/K .
+\end{equation}
+In fact \eqref{eq:count-quadratic} at \(4r\) gives
+\(\#\{j:|\hat h_j|\ge r\}\le Cn/\sqrt r\) for \(1\le r\le K^2\).
+Integrating up to \(K^2\) bounds the sum of the retained absolute stepsizes
+by \(CnK\).
+Each run contributes at most one final interval, and every other
+interval has absolute mass greater than \(K^2\). This gives
+\eqref{eq:count-partition}, since \(n\ge\kappa^q\ge K\).
+
+\paragraph{Counting the steps above a threshold.}
+Set \(s=K/4\) and \(t_j=\min\{\hat h_j,s\}\), so that
+\(S_K^+(H)=4\sum_j(t_j)_+\). For each retained interval \(I\), let
+\[
+ W_I=\sup_{z>0}z^q\#\{j\in I:t_j\ge z\}.
+\]
+The construction in Appendix~\ref{app:tests} gives a single \(1\)-smooth,
+\(\mu\)-strongly convex function \(f\) with minimizer \(0\) and an initial
+point \(x_0\ne0\) for which GD with the original stepsizes satisfies
+\begin{equation}\label{eq:count-joint}
+ \log\frac{\|x_n\|}{\|x_0\|}
+ \ge \frac{c}{K^q}\sum_{I\in\mathcal I}W_I-\frac{Cn}{K^q}.
+\end{equation}
+To obtain this bound, we use steps above a threshold as checkpoints.
+A planar trajectory at each checkpoint relates its stepsize to the
+steps in the preceding gap. When the planar estimate is close to
+equality at several consecutive splits, we use Jeong and Hong's
+four-direction construction to obtain a stronger bound across these
+gaps. Each interval may require a different
+threshold and different trajectories. We join them so that their norm
+ratios multiply over the original schedule.
+
+If \(D(H)\le1\), the left side of \eqref{eq:count-joint} is at most zero.
+If \(E(H)\le1\), then
+\(\mu\|x_n\|^2/2\le f(x_n)-f(0)\le f(x_0)-f(0)\le\|x_0\|^2/2\),
+so it is at most \(\frac12\log\kappa\). Since \(n\ge\kappa^q\) and
+\(K=\kappa^{1/1000}\), either case gives \(\sum_I W_I\le Cn\).
+Integrating the count now yields
+\begin{equation*}
+ \sum_{j\in I}(t_j)_+
+ =\int_0^s\#\{j\in I:t_j\ge z\}\,dz
+ \le\frac{s^{1-q}}{1-q}W_I .
+\end{equation*}
+The removed steps contribute at most \(K\) each to \(S_K^+(H)\).
+By \eqref{eq:count-partition} their total contribution is \(O(n)\),
+which proves \(S_K^+(H)\le CnK^{1-q}\).
+
+\appendix
+\section{Proofs for the hard function and the stepsize count}\label{app:geometry}
+Appendix~\ref{app:arc} proves the checkpoint estimates of Section~\ref{sec:proof-block} and shows how to join successive trajectories. Appendix~\ref{app:tests} uses the same construction to prove the counting estimate in Section~\ref{sec:proof-count}. Both arguments require a smooth objective with prescribed gradients at the GD iterates. For this we use the Moreau envelope~\cite{Moreau}. Given a finite nonnegative convex function $P$ with $P(0)=0$, write $\operatorname{env}_1P(x)=\min_z\{P(z)+\|x-z\|^2/2\}$. For $0<\theta<1$, set
+\[
+ F_P(x)=\tfrac{\theta}{2}\|x\|^2+(1-\theta)\operatorname{env}_1P(x).
+\]
+We call $P$ the \emph{residual} in this representation. The resulting objective $F_P$ is $1$-smooth and $\theta$-strongly convex, with minimizer zero. To prescribe a gradient $g$ at a query $x$, it suffices to exhibit a supporting plane of $P$ at $z$ with slope $l$, where
+\begin{equation}\label{eq:prox-interface}
+ z=\frac{x-g}{1-\theta},\qquad l=x-z=\frac{g-\theta x}{1-\theta}.
+\end{equation}
+Indeed $l\in\partial P(z)$ says that $z$ is the minimizer defining $\operatorname{env}_1P(x)$, the \emph{proximal point} at $x$. As in Jeong and Hong~\cite[Lemma~4.1]{JH}, taking the maximum of $P$ and another convex function preserves the prescribed gradient whenever the other function is at most $P(z)$ at this point. This gives a way to check that GD follows two successive trajectories on one objective.
+
+\subsection{Details of the proof of Lemma~\ref{lem:block}}\label{app:arc}
+
+We first construct the local function that gives~\eqref{eq:signed-block-transfer}. We then justify the block estimates and quantify the loss when a repair interrupts the chain. Finally we show how to join all the resulting portions on one objective. The last construction is also used in the proof of Lemma~\ref{lem:count}.
+
+\paragraph{Constructing the trajectory in one gap.}
+Ye and Liu~\cite[Section~3.1]{YLsmooth} construct a trajectory backwards by
+projecting onto the convex hull of a circular arc and the origin. For signed
+steps we use the disk of Jeong and Hong~\cite[Section~4.2]{JH}. For \(0<\sigma\le1/16\),
+its center is \(z_c=(\sigma,-\sigma)\) and its boundary passes through
+\(k=(\sigma^2,1)\). Intersect the disk with \(0\le\sigma^2 v_2\le v_1\)
+and denote the resulting set by \(\mathcal K\). Its right endpoint on the
+horizontal axis is \((c,0)\), \(1\le c\le1+2\sigma\). Let \(a=1-\theta\),
+where the strong convexity parameter \(\theta\) satisfies \(0<\theta e^{4/\sigma}\le\sigma/4\). Write \(\Pi_{\mathcal K}\) for
+Euclidean projection and \(\sigma_{\mathcal K}(z)=\max_{v\in\mathcal K}
+\langle v,z\rangle\) for the support function. The gradient of its
+Moreau envelope with parameter one is \(\Pi_{\mathcal K}\)~\cite[(4.12)]{JH}.
+Adding the strongly convex quadratic gives the field
+\(V(Q)=\theta Q+a\Pi_{\mathcal K}(Q)\).
+
+For gap stepsizes \(h_1,\ldots,h_N\) with \(1-\theta h_i>0\), we solve the GD update \(Q_{i-1}-h_i V(Q_{i-1})=Q_i\) backwards from \(Q_N=k\). We need a region in which a preimage exists for either sign of \(h_i\). Take the region
+between the positive horizontal axis and the following curve. Start
+with the segment \([0,k]\), then follow \(\dot Q=V(Q)\) until its
+projection first reaches \((c,0)\), say at \(Q_*=(X_*,W_*)\). Continue
+with the ray
+\(y=W_*(\theta x+ac)/(\theta X_*+ac)\).
+To verify the construction, write \(Q=z_c+s(\cos\alpha,\sin\alpha)\)
+along the circular part and let \(r\) be the disk radius. Then
+\(V=z_c+(\theta s+ar)(\cos\alpha,\sin\alpha)\) and
+\(s\dot\alpha=-\sigma(\sin\alpha+\cos\alpha)\). While
+\(s\le e^{4/\sigma}\), direct substitution gives
+\(0<\dot s\le1+4\sigma\) and \(-s\dot\alpha\ge\sigma(1-2\sigma)\).
+The angular interval has length at most \(\pi/2+\sigma\). Integrating
+\(d\log s/d\alpha\) gives \(X_*+W_*\le C e^{3/\sigma}\) before
+the radius reaches \(e^{4/\sigma}\). The tangent slope decreases because,
+with radial and tangential unit vectors \(e_\alpha,e_\alpha^\perp\),
+\(\det(V,D\Pi_{\mathcal K}V)=(r/s)(V\cdot e_\alpha)
+(V\cdot e_\alpha^\perp)<0\). Beyond \(Q_*\) the entire region
+lies in the normal cone translated to \((c,0)\), as the ray's slope
+is below \(W_* /(X_*-c)\). The upper boundary is therefore concave with matching tangents. The field \(V\) is tangent both there and on the horizontal axis. The
+backward equation now has a solution by the argument of Jeong and
+Hong~\cite[Lemma~4.3]{JH}, who give a variational proof of the
+signed-step construction of He and Cheng~\cite{HC}. Indeed, minimizing
+\(\|z-Q_i\|^2/2-h_iG(z)\) over the region, where \(\nabla G=V\),
+gives \(z-h_iV(z)=Q_i\). The first-order condition gives an outward normal
+\(w=Q_i-z+h_iV(z)\) at \(z\). Since \(Q_i\) lies
+in the region and \(V(z)\) is tangent, \(\|w\|^2=\langle w,Q_i-z\rangle\le0\).
+A minimizer exists because
+\(1-\theta h_i>0\) and the envelope term grows at most linearly.
+
+We next bound the initial point in terms of the stepsizes. Write \(Q_0=(X,W)\), \(\chi_j=\prod_{i\le j}(1-\theta h_i)\) and
+\(m_\theta=\max_{0\le j\le N}(\chi_j^{-1}-1)/\theta\). Up to the
+first \(j\) with \((Q_j)_1\le X_*\), the two coordinates satisfy
+\((Q_j)_1+ac/\theta=\chi_j(X+ac/\theta)\), \((Q_j)_2=\chi_j W\).
+Hence
+\begin{equation}\label{eq:arc-prefix}
+ X\le X_*+(\theta X_*+ac)m_\theta,\qquad
+ W\le W_*(1+\theta m_\theta).
+\end{equation}
+The estimates hold on every suffix. If the positive mass is \(S\)
+with \(\theta S\ll1\), then \(m_\theta\le S/(1-\theta S)\). If
+\(U=\sum|h_i|\) and \(\theta U\ll1\), expanding the prefix products
+instead gives \(m_\theta=m+O(\theta U^2)\), where \(m=\max_{0\le j\le N}\sum_{i=1}^j h_i\).
+
+We also need a lower bound on \(X\) at one specified long step.
+Whenever \(ac h_j\ge X_*\), take at that step the preimage
+\(((Q_j)_1+ac h_j,(Q_j)_2)/(1-\theta h_j)\). Its first coordinate
+is at least \(X_*\). It lies under the terminal ray because the whole
+region lies below the affine extension of that ray. Telescoping the
+first coordinate back to \(Q_0\), using \(\Pi_{\mathcal K}(Q)_1\in[0,c]\)
+and \eqref{eq:arc-prefix} on all suffixes, gives
+\(X\ge ac(h_j-\sum_{i<j}(-h_i)_+)-O(\theta U^2)\) when
+\(X_*\le U,\ \theta U\ll1\).
+
+\paragraph{Realizing the transfer at a checkpoint.}
+We construct a component using the gradient field \(V\). Until we rescale
+the objective at the end of this paragraph, \(h_i\) and \(b\) denote the
+stepsizes for this field, with \(b\) the checkpoint step. Take
+\(K_0\ge C(1+X_*+W_*/\sigma^2)\), \(\theta(K_0+S)\) sufficiently
+small, and a checkpoint \(b>K_0\). Put
+\(D=K_0+(\theta X_*+ac)S/(1-\theta S)\), \(Z=(1-X/D,W/D)\), and
+\(J(x,y)=(x,-y)\). The points \(x_j=Z+JQ_j/D\) start at \((1,0)\)
+and take the prescribed steps with gradients \(g_j=JV(Q_j)/D\).
+Since \(V(k)=k\), the checkpoint sends the second coordinate to \((W+b-1)/D\).
+To realize these gradients, take the convex function inside the envelope
+in \eqref{eq:prox-interface} to be
+\[
+ P(z)=D^{-1}\max_{v\in\mathcal K}\langle Jv,z-Z/a\rangle
+                    -(\theta/a)\langle Z,z\rangle .
+\]
+At the proximal point \(z_j=(x_j-g_j)/a\), the projection identity gives
+the required subgradient \((g_j-\theta x_j)/a\). Equation~\eqref{eq:arc-prefix} on each suffix gives
+\(D\ge X+W/\sigma^2+c+1\), \(P(0)=0\), \(\|Z\|+\|z_j\|\le C\),
+and \((z_j)_1\ge0\). To see that \((z_j)_2\le W/(aD)\), observe that
+reducing the second coordinate of any point of \(\mathcal K\) toward zero
+preserves membership, so \((\Pi_{\mathcal K}Q)_2\le Q_2\).
+
+The input to the next gap may already have a positive activation threshold. To allow for this translation, add a scalar quadratic of curvature
+\(\alpha=[16(K_0+S)]^{-1}\) with initial value \(\alpha v_0^2=C_2\theta\),
+\(v_0>0\). Its pre-checkpoint values \(v_j=v_0\prod_{t\le j}(1-\alpha h_t)\)
+all exceed \(15v_0/16\). Its function inside the same envelope is
+\(P_s(w)=(\alpha-\theta)w^2/[2(1-\alpha)]\), with proximal coordinate
+\(w_j=(1-\alpha)v_j/a\). Set \(J_0=\sqrt{1+v_0^2}\),
+\(e=(1,0,v_0)/J_0\) and \(o=(0,1,0)\), the input and output directions.
+Let \(L\) be the maximum of the supporting affine functions of \(P+P_s\)
+with the prescribed slopes at \(Y_j=(z_j,w_j)\).
+All intercepts and slopes along \(o\) are nonpositive. Slopes along
+\(e\) are at least \([-\theta Z_1+v_0(\alpha-\theta)v_j]/(aJ_0)
+\ge2\theta/a\). Moreover \(L(Y_j)\ge c\alpha v_j^2-C\theta\),
+enough to cover \(C\theta(1+v_0v_j)\) for the absolute constants
+below. Choose \(C_2\) large and then \(\theta(K_0+S)\) small enough
+that \(J_0\le2\).
+
+For \(0\le d\le1\) translate the physical input by \(de\) and set
+\[
+ L_d(Y)=L(Y-de/a)-(\theta d/a)\langle e,Y\rangle+
+                  \theta d^2/a-L(-\theta de/a).
+\]
+Then \(L_d(de)=0\), and the preceding margin makes \(L_d\ge0\)
+at every translated proximal query. In \(L_d\) replace the \(e\)
+coordinate by its maximum with \(d\), and the \(o\) coordinate by
+its minimum with \(W/(aD)\). Take the maximum of the result with
+zero to obtain \(U_d\). The slope signs make this a convex majorant. The translated proximal queries have input coordinate at least \(d\) (since \((z_j)_1,w_j\ge0\)) and output coordinate at most \(W/(aD)\), so the majorant preserves their supports. On \(te\) for \(t\le d\)
+it is zero, and above the output threshold \(W/(aD)\) it is constant
+in direction \(o\).
+
+To use the same construction in successive gaps, let \(A\) be the incoming coordinate and \(0\le s\le(A-s)/2\) its activation threshold. Take
+\(\ell=(A-s)/J_0,\ d=s/\ell\). Identify \(e\) with the preceding
+output and place the perpendicular coordinates in a new orthogonal subspace.
+Use the residual \(\ell^2 U_d(\cdot/\ell)\) for this gap. Its output
+value and threshold are \(\ell(W+b-1)/D\) and \(\ell W/(aD)\).
+We verify that the sum of these residuals under one envelope gives the same
+transfer. Use the prescribed proximal point on the active component and set
+the later coordinates to zero. The next residual vanishes because its input
+is at or below its threshold. Every later residual vanishes at zero. As
+all are nonnegative, zero is a subgradient of each at this choice.
+The input coordinate of the active proximal point is at least \(s\).
+For every choice of its private coordinates, the preceding residual is
+nonincreasing in this shared coordinate and constant above \(s\).
+We may therefore minimize the proximal objective over all earlier private
+coordinates with the shared coordinate fixed at \(s\). This gives a
+supporting plane for the earlier residuals with slope zero in the
+shared coordinate, also valid at the active proximal point. The three
+choices together satisfy the proximal optimality condition
+\eqref{eq:prox-interface}. Induction over the gaps now gives the stated
+GD trajectory on a single objective. The exact excess ratio is
+\((b-1-\theta W/a)/(D J_0)\), and the outgoing threshold-to-excess
+ratio is \(W/[a(b-1)-\theta W]\).
+
+To obtain \eqref{eq:signed-block-transfer}, multiply this local objective by
+\(1/4\). A step \(h_t\) on the scaled objective is a step \(h_t/4\) on the
+local one, where we take \(\theta=16\mu\) and \(K_0=K/4\). With \(\sigma=32/\log K\) the
+required bound on \(K_0\) follows from \(X_*+W_*\le C e^{3/\sigma}\).
+Now \(\theta W/a\le1\), \(J_0\le e^{C\theta(K_0+S)}\), and
+\(\theta X_*+ac\le1+C/\log K\). Substitution gives the asserted
+transfer with no fixed cost per checkpoint. The threshold ratio is
+\(O(W_*/b)=o(1)\) uniformly for the checkpoints used here, so
+\(s/(A-s)\le1/2\) and \(J_0\le2\) give \(d\le1\) at the next gap.
+
+\paragraph{The block partition and the repair rule.}
+We now give the partition used in Section~\ref{sec:proof-block}. We write
+\(p_t=(h_t)_+\) and call the sum of \(p_t\) over an interval its positive mass.
 Put \(\nu=1/\log_2(1+\sqrt{1+c_K})\). Since
 \(0\le q-\nu=O(1/\log K)\), we have \(\kappa^\nu\asymp\kappa^q\).
 Choose a small absolute \(\tau>0\) below, and let
-\(U=(\tau/2)^{1/\nu}\kappa\). Split each run of steps \(p_t\le K\)
+\(U=(\tau/2)^{1/\nu}\kappa\). For sufficiently large \(\kappa\) we have
+\(K+8\le U/2\). Split each run of steps \(p_t\le K\)
 greedily into pieces of positive mass at most \(U/2\). Represent a piece
 of mass \(s\) immediately followed by a large step \(p_t>K\) by the pair
 \((g,b)=(s+8,p_t-8)\). An initial large step or a large step immediately
@@ -146,21 +473,22 @@ number \(N\) of pairs is \(O(nK^{-q})\) and \(\sum g=O(nK^{1-q})\).
 By concavity,
 \(\sum(K+g)^\nu\le N^{1-q}(KN+\sum g)^q=O(n)\).
 Group consecutive pairs greedily into blocks of weight
-\(\sum(K+g)^\nu\le\tau\kappa^\nu\). Each pair uses at most half
-this allowance, so the number \(B\) of blocks is \(O(n/\kappa^q)\).
+\(\sum(K+g)^\nu\le\tau\kappa^\nu\). Since \(g\le U/2+8\) and
+\(K+8\le U/2\), each pair has weight at most \(U^\nu=\tau\kappa^\nu/2\).
+Hence every block except the last uses at least half the allowed weight,
+and the number \(B\) of blocks is \(O(n/\kappa^q)\).
 
-At the start of a block, let \(w\) be the positive mass after the latest
+For the score calculation, let \(w\) be the positive mass after the latest
 checkpoint and before this block, including all earlier steps if no
 checkpoint has been selected. Add \(w\) to the first \(g\). Among all sets
 of indices \(t_1<\cdots<t_k\) in this block with \(h_{t_i}>K\), maximize
-\(\prod_i b_i/d_i\), where \(b_i=h_{t_i}-8\), \(S_i\) is the positive
+\(\prod_i \widehat b_i/d_i\), where \(\widehat b_i=h_{t_i}-8\), \(S_i\) is the positive
 mass of the gap ending at \(t_i\), and \(d_i=c_K(K+S_i+8)\). For the first
 gap \(S_1\) includes \(w\). The empty product is one. In the alternating
 list of paired entries \((g,b)\), this is the score of~\cite[Appendix~B]{LY}
 with offset \(K\). Let \(M=w^\nu+\tau\kappa^\nu\), an upper
 bound on the weight including \(w\). We use three consequences of
-\cite[Lemmas~B.5--B.7 and proof of Lemma~4.1(ii)]{LY}. When the
-maximizer is empty the block including its incoming mass has total
+\cite[Lemmas~B.5--B.7 and proof of Lemma~4.1(ii)]{LY}. If the maximizing set is empty, the block including its incoming mass has total
 mass \(O(M^{1/\nu})\) and at most \(c_K^\nu M x^{-\nu}\) entries
 \(b>x\) for every \(x>0\). Otherwise the selected denominators \(d_i\)
 sum to at most \(c_K M^{1/\nu}\), and the suffix after the last
@@ -190,22 +518,17 @@ suffix therefore begins after that block. If \(I_j\) meets \(L_j\)
 blocks, it crosses \(L_j-1\) block boundaries. Hence
 \(\sum_j L_j\le 2B\), since there is at most one repair per block.
 
-Call a repair exceptional if the steps \(p_t\le K\) in \(I_j\)
-have total mass greater than \(S_0/16\). By disjointness and the
-bound on \(S_K^+(H)\), their number \(J\) satisfies
-\begin{equation}\label{eq:signed-exception-count}
- J\le \frac{16}{S_0}\sum_{t:p_t\le K}p_t
- \le C(n/\kappa^q)\kappa^{-(1-q)(1-1/1000)} .
-\end{equation}
+Each exceptional repair uses more than \(S_0/16\) mass from steps \(p_t\le K\) in its suffix. Disjointness and the hypothesis \(S_K^+(H)\le C_*nK^{1-q}\) therefore give \eqref{eq:signed-exception-count}.
 
 In every other repair the steps larger than \(K\) in \(I_j\)
 have total mass greater than \(S_0/16\). We claim that
 \(h_j^\star/S_0\ge c_1 L_j^{-1/(1-q)}\). This holds immediately
 if \(h_j^\star\ge S_0\). Otherwise, write \(N_j(x)\) for the
-number of steps \(p_t>x\) in \(I_j\). Each block contributes only
-steps from a block whose maximizing set is empty or from the suffix after
-the last selected checkpoint. For \(K\le x\le S_0\), every \(p_t>x\)
-has encoded size \(p_t-8>x/2\). The level count above, with
+number of steps \(p_t>x\) in \(I_j\). A block that meets \(I_j\) has
+an empty maximizing set or meets \(I_j\) only after its last selected
+checkpoint. In either case we can use the count for an empty maximizer.
+For \(K\le x\le S_0\), a step \(p_t>x\) contributes an entry
+\(p_t-8>x/2\) to the paired list. The count above, with
 \(M=O(S_0^\nu)\) and \(\nu\le q\), gives
 \(N_j(x)\le C L_j(S_0/x)^q\). Consequently
 \[
@@ -220,457 +543,24 @@ h_j^\star/2\) for large \(\kappa\). By \eqref{eq:signed-block-transfer},
 \(D_+/D\ge c_2 h_j^\star/S_0\). Summed over these repairs, the
 logarithmic loss is at most \(O(\sum_j(1+\log L_j))=O(B)\).
 
-\paragraph{Connecting the exceptional intervals.}
-A nonexceptional checkpoint is available for changing coordinates if
-its size lies in \([4,\kappa/4]\). All nonexceptional repairs have
-this property. Include \(0,n+1\) as endpoints, and mark every open
-interval between successive available indices that contains an
-exceptional repair. There are at most \(J\) marked intervals.
-At the entrance and exit of each, reserve the boundary checkpoints
-for changing trajectories. A shared boundary is used just once.
-
-In an unmarked portion use the components from \eqref{eq:signed-block-transfer}.
-A whole maximizing set has score
+\paragraph{A partial maximizing set.}
+The marked intervals in Section~\ref{sec:proof-block} can split a maximizing set. Write \(\widehat b_i=h_{t_i}-8\) and \(d_i=c_K(K+S_i+8)\) as in the score calculation above. The whole set has score
 at least one, and \(\sum d_i=O(\kappa)\) bounds its exponential loss by
 a constant in the logarithm. A cut can leave a contiguous fragment
-\(I\) of that set. Its log loss \(A(I)=\sum_{i\in I}\log(d_i/b_i)\)
-is \(O(\log\kappa\log(1+|I|))\). Indeed, let \(b_*=\max_{i\in I}b_i\).
+\(I\) of that set. Its log loss \(A(I)=\sum_{i\in I}\log(d_i/\widehat b_i)\)
+is \(O(\log\kappa\log(1+|I|))\). Indeed, let \(\widehat b_*=\max_{i\in I}\widehat b_i\).
 Deleting the fragment changes only the next surviving denominator,
-increasing it by at most \(C(\kappa+|I|(b_*+8))\), so maximality
-gives \(A(I)\le\log b_*+O(\log\kappa)\) (or \(A(I)\le0\) for a
+increasing it by at most \(C(\kappa+|I|(\widehat b_*+8))\), so maximality
+gives \(A(I)\le\log \widehat b_*+O(\log\kappa)\) (or \(A(I)\le0\) for a
 terminal fragment). Here \(|I|\le C\kappa\). Let \(I_1,I_2\) be the
-subsets before and after an index attaining \(b_*\). The contribution at
-that index is at most \(O(\log\kappa)-\log b_*\), so
+subsets before and after an index attaining \(\widehat b_*\). The contribution at
+that index is at most \(O(\log\kappa)-\log \widehat b_*\), so
 \(2A(I)\le A(I_1)+A(I_2)+O(\log\kappa)\). Induction proves the
 claim since the average of \(\log(1+|I_1|),\log(1+|I_2|)\) is
-at most \(\log(1+|I|)-\log2\). There are \(O(J)\) cut fragments.
+at most \(\log(1+|I|)-\log2\). There are \(O(J)\) cut fragments. Since each selected denominator is at least \(K\) and the sum is \(O(\kappa)\), each costs at most \(O(\log^2\kappa)\).
 
-On a marked interval every positive step is either at most
-\(\delta\kappa\) or greater than \(\kappa/4\): the open gaps and
-exceptional repair tails have mass at most \(\delta\kappa\), and any
-other checkpoint there exceeds \(\kappa/4\). Use three quadratics
-with curvatures \(12\mu,16\mu,20\mu\). On each of them a large step
-multiplies the distance by at least two and pays for the log loss
-\(O(\delta)\) in the gap preceding it. Negative steps only increase
-the distance. Exceptional checkpoints, their preceding gaps, and the
-final gap cost \(O(1+J_I)\) in log distance, where \(J_I\) is the
-number of exceptional repairs in that interval.
-
-Appendix~\ref{app:arc} proves that these portions can be realized on
-one objective. Here is the quantitative estimate needed to finish.
-Start each portion at unit norm. For an arc portion let \(G_i\) be
-its final excess, just before the last open gap. The output stays
-at least \(c G_i\) through this gap since its positive mass is at most
-\(\delta\kappa\) and its incoming threshold is at most \(G_i/2\);
-at initialization take \(G_i=1\). For a quadratic portion let
-\(G_i\) be the smallest of its three final absolute multipliers.
-The estimates above give
-\(\sum_i\log^-(G_i)=O(B+J\log^2\kappa)\), where
-\(\log^-x=\max(0,-\log x)\).
-
-At a reserved step following a portion of length \(r_i\), the three
-curvatures distinguish its last query from earlier ones. Each nonzero
-step increases the middle multiplier's magnitude relative to
-the geometric mean of the two outer magnitudes. The construction giving
-\eqref{eq:joins-gain} then starts the next portion exactly at a scaled
-copy of its prescribed input. In addition to
-\(\log^-(G_i)\), the log cost per switch is at most
-\(C(1+\log\kappa+\log(1+r_i)+\log^-(G_{i+1}))\).
-There are at most \(2J\) switches, and \(\sum r_i\le n\).
-The last portion needs no switch. Thus the total loss is at most
-\[
- C\{B+J\log^2\kappa+J\log(1+n/J)\}=O(n/\kappa^q),
-\]
-where the last term is zero if \(J=0\). The equality follows from
-\eqref{eq:signed-exception-count} and monotonicity of
-\(x\log(1+n/x)\). Exponentiating proves Lemma~\ref{lem:block}.
-\section{Proof of Lemma~\ref{lem:count}}\label{sec:proof-count}
-
-We bound \(S_K^+(H)\) by counting the stepsizes above each threshold.
-Jeong and Hong~\cite[Sections~3--7]{JH} obtained such a count in the
-smooth convex setting. At each threshold they select the steps above it
-as checkpoints and construct a function on which the ratio of final to
-initial error depends on those checkpoints. Here we first cut the
-schedule into intervals on which the quadratic contraction is small.
-We adapt their count on each interval, then join the corresponding
-trajectories on one strongly convex function.
-
-\paragraph{Cutting at large steps.}
-On \(f(x)=\lambda x^2/2\), both error ratios equal \(|P(\lambda)|^2\)
-for \(P(z)=\prod_{j=1}^n(1-h_jz)\). Since the schedule is stable in
-at least one of the two measures, that is, \(\min\{D(H),E(H)\}\le1\), we have \(|P|\le1\) on
-\([\mu,1]\). For \(1\le r\le\kappa\) it follows that
-\begin{equation}\label{eq:count-quadratic}
- \sum_j\log(1+h_j^2/r^2)=2\log|P(\mathrm i/r)|\le Cn/\sqrt r .
-\end{equation}
-Indeed the affine image of \(\mathrm i/r\) under
-\([\mu,1]\mapsto[-1,1]\) is \(z=-1+O(1/r)\). Writing
-\(z=(w+w^{-1})/2\) with \(|w|\ge1\) gives \(|w|\le1+C/\sqrt r\).
-The maximum principle on the exterior disk, applied to the transformed
-polynomial divided by \(w^n\), gives \(|P(\mathrm i/r)|\le |w|^n\).
-
-Set \(\hat h_j=h_j/4\). A step of size \(h_j\) on \(F/4\) then gives
-the same iterate as a step of size \(\hat h_j\) on \(F\). This scaling
-leaves room to join consecutive intervals while preserving the required
-smoothness and strong convexity. Remove all steps with \(|\hat h_j|>K^2\).
-In each remaining run, start a new interval whenever
-the next step would bring the sum of absolute stepsizes above \(M=2K^2\).
-Write \(\mathcal I\) for these intervals. We have
-\begin{equation}\label{eq:count-partition}
- \#\{j:|\hat h_j|>K^2\}+|\mathcal I|\le Cn/K,\qquad
- V_I:=\sum_{j\in I}(1+|\hat h_j|)^{4/9},\qquad \sum_I V_I\le Cn .
-\end{equation}
-In fact \eqref{eq:count-quadratic} at \(4r\) gives
-\(\#\{j:|\hat h_j|\ge r\}\le Cn/\sqrt r\) for \(1\le r\le K^2\).
-Integration up to \(K^2\) bounds the retained absolute mass by \(CnK\)
-and the sum of the \(4/9\)-moments by \(Cn\), since \(4/9<1/2\).
-Each run contributes at most one final interval, and every other
-interval has absolute mass greater than \(K^2\). This gives
-\eqref{eq:count-partition}, since \(n\ge\kappa^q\ge K\).
-
-\paragraph{Counting the steps above a threshold.}
-Fix \(s=K/4\) and set \(t_j=\min(\hat h_j,s)\), so that
-\(S_K^+(H)=4\sum_j(t_j)_+\). For \(t>0\) put
-\(g(t)=t\min\{1/4,1024^2/\log^2(e+t)\}\) and for \(t\le0\) put
-\(g(t)=0\). At a checkpoint we reserve \(g(t_j)\) of the step to
-start the next component. We therefore compare the remaining sizes
-\(v_j=t_j-g(t_j)\) with the threshold. For each interval \(I\) let
-\[
- W_I=\sup_{z>0} z^q\#\{j\in I:v_j\ge z\}.
-\]
-Indeed \(v_j\ge3t_j/4\) for \(t_j>0\), so integrating this count gives
-\begin{equation}\label{eq:count-moment}
- \sum_{j\in I}(t_j)_+
- \le \frac{(4/3)^q}{1-q}\,K^{1-q} W_I .
-\end{equation}
-The removed steps contribute only \(O(n)\) to \(S_K^+(H)\), since there
-are \(O(n/K)\) of them and each contributes at most \(K\).
-It remains to prove \(\sum_I W_I=O(n)\).
-
-\paragraph{Estimating the count on one interval.}
-Fix \(I\). A checkpoint set \(T\subseteq I\) partitions its unselected
-indices into gaps, including the initial and terminal gaps. In gap \(U\)
-write \(m_U\) for the largest signed prefix sum of the \(t_j\), including
-the empty prefix, and \(d_U=m_U-\sum_{j\in U}t_j\) for the drop from
-this maximum to the final sum. Let \(S_U=\sum_{j\in U}(t_j)_+\).
-Write \(b_U=g(t_j)\) if checkpoint \(j\) follows \(U\), and \(b_U=s\)
-for the terminal gap.
-
-Let \(z_\star\) be a height attaining \(W_I\). When \(z_\star\) is
-bounded, \(W_I=O(|I|)\), so only large \(z_\star\) matter.
-As in~\cite[(5.6)--(5.9)]{JH}, take \(u\) between a sufficiently
-large absolute constant and \(\log z_\star-4\sqrt{\log z_\star}\).
-For the final comparison just below \(z_\star\), also take \(u=\log z_\star\)
-as in~\cite[Lemma~5.2]{JH}. In either case put \(B=e^{u/32}\). For a gap \(U\) set
-\(Y_U=B+m_U+b_U\) and \(Y_U^+=B+S_U+b_U\).
-The first construction, which we call the ordinary test, uses one planar trajectory per checkpoint
-(Appendix~\ref{app:tests}). Its lower bound on the logarithm of the
-final-to-initial norm ratio, before the error estimated below, is
-\(-A(T)\), where
-\[
- A(T)=\log\frac{\prod_{U\ {\rm gap\ of}\ T}Y_U}
-                   {s\prod_{j\in T}(v_j-B)}+\frac{C_p}{u}(|T|+1).
-\]
-Here \(C_p\) is a sufficiently large absolute constant. The sets \(T\)
-are \(\{j:v_j>B+e^y\}\), their closed versions with \(\ge\),
-and the sets obtained by adding checkpoints in~\cite[(5.24), (7.12)]{JH}.
-At the top height we take \(T=\{j:v_j\ge z_\star\}\).
-Every lower threshold selects every clipped step as well, since all
-clipped steps have the same, largest value of \(v_j\). Hence the gap
-steps use the original \(\hat h_j\).
-
-For \(e^{u/2}\le B+e^y\le e^{u+\sqrt u}\), Jeong and Hong also use a
-second construction. Recursively split each interval at the leftmost
-index maximizing \(v_j>0\), leaving its earlier and later indices in
-the two children. Stop when no positive entry remains. On certain gaps
-the next \(\ell+2\) levels of splits are close to the equality case of
-their scalar inequality, where \(\ell=\lfloor(\log_2u)/100\rfloor\).
-On these gaps they use four gradient directions to improve the ordinary
-lower bound. In our notation, the improvement in log norm is
-\(\tfrac12\sum_{r\in\mathcal A(y)}(G_\ell(r)-C_p\omega_r)_+\).
-Here \(\mathcal A(y)\) is the set of gap roots satisfying the adjacency
-and near-equality conditions in~\cite[(6.45)--(6.49)]{JH};
-\(G_\ell(r)\) is their weighted sum of changes in log ratio over the
-subtree~\cite[(6.30)--(6.31)]{JH}, and \(\omega_r\) is the error in
-this approximation~\cite[(6.53)]{JH}. We use their definitions with
-heights \(v_j\) and gap sizes \(Y_U\). The factor \(1/2\) converts their
-log squared-norm estimate to a log norm estimate.
-
-Choose \(q<d<4/5\). Subtract \(e_I(y)=CV_Ie^{-dy}\) from each
-test's log gain at its reference level \(y\). Let \(Q_I\) be the
-larger of zero and the supremum of these adjusted gains. At bounded
-\(z_\star\), set \(Q_I=0\).
-We will prove
-\begin{equation}\label{eq:count-scalar}
- W_I\le C\{V_I+K^q(1+Q_I)\}.
-\end{equation}
-The other ingredient is that the tests can be chosen independently
-on different intervals and realized on one strongly convex objective.
-By \eqref{eq:physical-simultaneous}, its log norm gain is at least
-the sum of the positive adjusted gains up to an error of \(Cn/K^q\).
-If \(D(H)\le1\), this log norm ratio is at most zero. If \(E(H)\le1\),
-strong convexity and smoothness bound it by \(\tfrac12\log\kappa\).
-Taking suprema gives
-\begin{equation}\label{eq:count-aggregate}
- \sum_I Q_I\le Cn/K^q,
-\end{equation}
-since \(n\ge\kappa^q\).
-
-\paragraph{The scalar estimate.}
-We check how the boundary charges \(b_U\) and the adjustment \(e_I(y)\)
-enter the proof of~\cite[Proposition~7.3]{JH}. Fix \(I\), write \(W=W_I\),
-and assume \(W\ge |I|+K^q\), since otherwise \eqref{eq:count-scalar}
-is immediate.
-
-\emph{Splits.} At a split \(j\) the left and right children \(L,R\) receive the terms
-\(g(t_j)\) and \(b_U\). With \(\tau=v_j-B>0\) the prefix identity
-\(m_U=\max(m_L,\sum_Lt_i+t_j+m_R)\) gives
-\[
- Y_L+Y_R+\tau-Y_U=\min(d_L,t_j+m_R),\qquad
- Y_L^++Y_R^++\tau-Y_U^+=0.
-\]
-Also \(Y_L\le Y_U\), since both \(g(t)\) and \(t-g(t)\) increase for
-\(t>0\), and the checkpoint following \(U\) is either an ancestor
-of \(j\) or is replaced by the terminal boundary term \(s\).
-These identities verify the hypotheses of~\cite[Lemma~3.1]{JH} as in
-their Lemma~3.3. At a split close to equality, in the precise sense of
-\cite[Lemma~5.5]{JH} applied to both \(Y\) and \(Y^+\),
-\cite[(5.15)--(5.16)]{JH} give
-\(d_L=O(\delta^2\tau)\) and \(Y_L^+-Y_L=O(\delta\tau)\), where
-\(\delta=u^{-1/10}\). The negative mass on the left is
-\(Y_L^+-Y_L+d_L\); the maximal prefix passes the splitting step, so
-\(d_R=d_U\). Replacing \(\tau\) by \(\tau-d_L\) gives
-\(Y_U=Y_L+Y_R+\tau-d_L\). The corrected change in log ratio is
-\(G_j=\log((\tau-d_L)Y_U/(Y_LY_R))\), as in~\cite[(5.27)--(5.31), (6.9)]{JH}.
-
-\emph{Threshold integration.} Add \(Q_I+e_I(y)\) to the log potential
-\(A(T)\) and its positive-mass counterpart, also for enlarged sets at
-the same reference level. They are now nonnegative, since \(Y_U^+\ge
-Y_U\), and the shifted potential bounds the extra gain of the second
-test. The arithmetic--geometric mean estimate~\cite[(5.1)]{JH} for
-\(\sum_U Y_U^q\) thereby incurs an endpoint cost at most
-\(q e^{qb}(Q_I+e_I(b))\) at level \(b\). The jumps at a fixed level
-are unchanged. In the integration by parts of~\cite[(5.4)]{JH} the
-additional derivative cost on \([a,b]\) is at most
-\[
- C\int_a^b e^{qy}|e_I'(y)|\,dy\le C V_I e^{-(d-q)a}.
-\]
-The same-level shifts cancel in the comparisons (5.24) and (7.12).
-For the four-direction test, (6.66) bounds the gain pointwise by the shifted
-potential, as needed in (6.70)--(6.71). Since \(a\ge u/4-O(1)\), the
-terms involving \(e_I\), even multiplied by the polynomial window
-factors, are summable over dyadic \(u\). The constant shift costs at
-most \(qK^q Q_I\) at the endpoint and has zero derivative.
-
-\emph{The terms reserved at checkpoints.} From \(\#\{t_j\ge z\}\le C Wz^{-q}\) one
-obtains by integration
-\[
- \sum_{t_j\ge e^U}g(t_j)^q\le CW U^{1-2q}.
-\]
-At an interior threshold \(z=B+e^y\) there are \(O(Wz^{-q})\) gaps
-of total unselected positive mass \(O(Wz^{1-q})\). Concavity bounds
-the sum of the \(q\)-powers of those masses by \(CW\); adding the
-gap offsets, including the single terminal \(s\), preserves this
-order. At a near-equality split in~\cite[(5.21)]{JH}, the child's
-positive mass including its boundary term is comparable to \(\tau\).
-If the boundary term supplies at least half of this
-mass, charge \(\tau^q\) to that boundary instead of its steps.
-The terminal charge is too large for such an interior child. At a
-fixed boundary there is one left child and possibly a nested sequence
-of right children. Their \(Y^+\) decrease under inclusion, and drop
-by a factor \(1/(1+\sqrt2)+O(\delta)\) at each near-equality split. The sum
-charged to boundary \(j\) is therefore \(O(g(t_j)^q)\). Here
-\(g(t_j)\gtrsim e^{u/4-O(1)}\), so the total cost \(O(Wu^{1-2q})\)
-is within (5.20). All remaining prefix comparisons in (6.61) use
-\(Y_L\le Y_U\).
-
-With these changes the right sides of the summed estimates
-(5.11)--(5.13), (6.68)--(6.71), and (7.12) in~\cite{JH}
-are controlled by \(W+K^qQ_I+V_I\) in place of \(W\).
-Write \(\Phi(u)\) for the average of \(\sum_U(1+m_U+b_U)^q\)
-at thresholds \(\exp(u+t\sqrt u)\), \(0\le t\le1\).
-The weighted sum in \cite[Proposition~7.3]{JH} gives
-\(\Phi(u)-\Phi(u/2)\le C(W+K^qQ_I+V_I)u^{-1/100}\). Changing the offset from
-\(B\) to one there costs at most \(O(WB^q e^{-qu/2})\).
-The top comparison at the closed set, as in \cite[Lemma~5.2]{JH},
-gives \(\Phi(\log z_\star-4\sqrt{\log z_\star})\ge cW-C K^q Q_I-CV_I\).
-At the bottom level \(\bar u\in[U,2U]\), the unselected positive
-steps are bounded in terms of \(U\). Subadditivity and the boundary
-charge estimate give
-\(\Phi(\bar u)\le C_U|I|+K^q+CW U^{1-2q}\).
-Summing the level differences and fixing \(U\) large absorbs the terms
-proportional to \(W\), since
-\(U^{1-2q}+\sum_{j\ge0}(2^j U)^{-1/100}\to0\).
-This proves \eqref{eq:count-scalar}.
-
-Summing \eqref{eq:count-scalar} over the intervals now gives
-\(\sum_I W_I=O(n)\) by \eqref{eq:count-partition} and
-\eqref{eq:count-aggregate}, since \(K^q|\mathcal I|\le Cn\).
-The capped stepsize bound follows from \eqref{eq:count-moment}
-and the contribution of the discarded steps.
-
-\appendix
-\section{Realizing the prescribed trajectories}\label{app:geometry}
-We use the Moreau envelope~\cite{Moreau} to turn a convex function $P$ into a smooth objective with prescribed gradients. For a finite nonnegative convex function $P$ with $P(0)=0$, write $\operatorname{env}_1P(x)=\min_z\{P(z)+\|x-z\|^2/2\}$. For $0<\theta<1$, set
-\[
- F_P(x)=\tfrac{\theta}{2}\|x\|^2+(1-\theta)\operatorname{env}_1P(x).
-\]
-We call $P$ the \emph{residual} in this representation. The resulting objective $F_P$ is $1$-smooth and $\theta$-strongly convex, with minimizer zero. To prescribe a gradient $g$ at a query $x$, it suffices to exhibit a supporting plane of $P$ at $z$ with slope $l$, where
-\begin{equation}\label{eq:prox-interface}
- z=\frac{x-g}{1-\theta},\qquad l=x-z=\frac{g-\theta x}{1-\theta}.
-\end{equation}
-Indeed $l\in\partial P(z)$ says that $z$ is the minimizer defining $\operatorname{env}_1P(x)$, the \emph{proximal point} at $x$. As in Jeong and Hong~\cite[Lemma~4.1]{JH}, taking the maximum of $P$ and another convex function preserves the prescribed gradient whenever the other function is at most $P(z)$ at this point. This gives a way to check that GD follows two successive trajectories on one objective.
-
-\subsection{Following a signed trajectory across checkpoints}\label{app:arc}
-
-\paragraph{The planar trajectory.}
-Ye and Liu~\cite[Section~3.1]{YLsmooth} construct a trajectory backwards by
-projecting onto the convex hull of a circular arc and the origin. For signed
-steps we use the disk of Jeong and Hong~\cite[Section~4.2]{JH}. For \(0<\sigma\le1/16\),
-its center is \(z_c=(\sigma,-\sigma)\) and its boundary passes through
-\(k=(\sigma^2,1)\). Intersect the disk with \(0\le\sigma^2 v_2\le v_1\)
-and denote the resulting set by \(\mathcal K\). Its right endpoint on the
-horizontal axis is \((c,0)\), \(1\le c\le1+2\sigma\). Let \(a=1-\theta\),
-where \(0<\theta e^{4/\sigma}\le\sigma/4\). Write \(\Pi_{\mathcal K}\) for
-Euclidean projection and \(\sigma_{\mathcal K}(z)=\max_{v\in\mathcal K}
-\langle v,z\rangle\) for the support function. The gradient of its
-Moreau envelope with parameter one is \(\Pi_{\mathcal K}\)~\cite[(4.12)]{JH}.
-Adding the strongly convex quadratic gives the field
-\(V(Q)=\theta Q+a\Pi_{\mathcal K}(Q)\).
-
-We solve \(Q_{i-1}-h_i V(Q_{i-1})=Q_i\) backwards from \(Q_N=k\) for
-any real steps with \(1-\theta h_i>0\). For this, take the region
-between the positive horizontal axis and the following curve. Start
-with the segment \([0,k]\), then follow \(\dot Q=V(Q)\) until its
-projection first reaches \((c,0)\), say at \(Q_*=(X_*,W_*)\). Continue
-with the ray
-\(y=W_*(\theta x+ac)/(\theta X_*+ac)\).
-To verify the construction, write \(Q=z_c+s(\cos\alpha,\sin\alpha)\)
-along the circular part and let \(r\) be the disk radius. Then
-\(V=z_c+(\theta s+ar)(\cos\alpha,\sin\alpha)\) and
-\(s\dot\alpha=-\sigma(\sin\alpha+\cos\alpha)\). While
-\(s\le e^{4/\sigma}\), direct substitution gives
-\(0<\dot s\le1+4\sigma\) and \(-s\dot\alpha\ge\sigma(1-2\sigma)\).
-The angular interval has length at most \(\pi/2+\sigma\). Integrating
-\(d\log s/d\alpha\) gives \(X_*+W_*\le C e^{3/\sigma}\) before
-the radius reaches \(e^{4/\sigma}\). The tangent slope decreases because,
-with radial and tangential unit vectors \(e_\alpha,e_\alpha^\perp\),
-\(\det(V,D\Pi_{\mathcal K}V)=(r/s)(V\cdot e_\alpha)
-(V\cdot e_\alpha^\perp)<0\). Beyond \(Q_*\) the entire region
-lies in the normal cone translated to \((c,0)\), as the ray's slope
-is below \(W_* /(X_*-c)\). The boundary is therefore concave with
-matching tangents, and the gradient is tangent on every face. The
-backward equation now has a solution by the argument of Jeong and
-Hong~\cite[Lemma~4.3]{JH}, who give a variational proof of the
-signed-step construction of He and Cheng~\cite{HC}. Indeed, minimizing
-\(\|z-Q_i\|^2/2-h_iG(z)\) over the region, where \(\nabla G=V\),
-gives \(z-h_iV(z)=Q_i\) by tangency. A minimizer exists because
-\(1-\theta h_i>0\) and the envelope term grows at most linearly.
-
-Write \(Q_0=(X,W)\), \(\chi_j=\prod_{i\le j}(1-\theta h_i)\) and
-\(m_\theta=\max_{0\le j\le N}(\chi_j^{-1}-1)/\theta\). Up to the
-first \(j\) with \((Q_j)_1\le X_*\), the two coordinates satisfy
-\((Q_j)_1+ac/\theta=\chi_j(X+ac/\theta)\), \((Q_j)_2=\chi_j W\).
-Hence
-\begin{equation}\label{eq:arc-prefix}
- X\le X_*+(\theta X_*+ac)m_\theta,\qquad
- W\le W_*(1+\theta m_\theta).
-\end{equation}
-The estimates hold on every suffix. If the positive mass is \(S\)
-with \(\theta S\ll1\), then \(m_\theta\le S/(1-\theta S)\). If
-\(U=\sum|h_i|\) and \(\theta U\ll1\), expanding the prefix products
-instead gives \(m_\theta=m+O(\theta U^2)\), where \(m\) is the
-largest signed prefix sum, including zero.
-
-We also need a lower bound on \(X\) at one specified long step.
-Whenever \(ac h_j\ge X_*\), take at that step the preimage
-\(((Q_j)_1+ac h_j,(Q_j)_2)/(1-\theta h_j)\). Its first coordinate
-is at least \(X_*\). It lies under the terminal ray because the whole
-region lies below the affine extension of that ray. Telescoping the
-first coordinate back to \(Q_0\), using \(\Pi_{\mathcal K}(Q)_1\in[0,c]\)
-and \eqref{eq:arc-prefix} on all suffixes, gives
-\(X\ge ac(h_j-\sum_{i<j}(-h_i)_+)-O(\theta U^2)\) when
-\(X_*\le U,\ \theta U\ll1\).
-
-\paragraph{Transfer at an ordinary checkpoint.}
-We construct a component using the gradient field \(V\). Until we rescale
-the objective at the end of this paragraph, \(h_i\) and \(b\) denote the
-stepsizes for this field, with \(b\) the checkpoint step. Take
-\(K_0\ge C(1+X_*+W_*/\sigma^2)\), \(\theta(K_0+S)\) sufficiently
-small, and a checkpoint \(b>K_0\). Put
-\(D=K_0+(\theta X_*+ac)S/(1-\theta S)\), \(Z=(1-X/D,W/D)\), and
-\(J(x,y)=(x,-y)\). The points \(x_j=Z+JQ_j/D\) start at \((1,0)\)
-and take the prescribed steps with gradients \(g_j=JV(Q_j)/D\).
-Since \(V(k)=k\), the checkpoint sends the second coordinate to \((W+b-1)/D\).
-To realize these gradients, take the convex function inside the envelope
-in \eqref{eq:prox-interface} to be
-\[
- P(z)=D^{-1}\max_{v\in\mathcal K}\langle Jv,z-Z/a\rangle
-                    -(\theta/a)\langle Z,z\rangle .
-\]
-At the proximal point \(z_j=(x_j-g_j)/a\), the projection identity gives
-the required subgradient \((g_j-\theta x_j)/a\). Equation~\eqref{eq:arc-prefix} on each suffix gives
-\(D\ge X+W/\sigma^2+c+1\), \(P(0)=0\), \(\|Z\|+\|z_j\|\le C\),
-and \((z_j)_1\ge0\). To see that \((z_j)_2\le W/(aD)\), observe that
-reducing the second coordinate of any point of \(\mathcal K\) toward zero
-preserves membership, so \((\Pi_{\mathcal K}Q)_2\le Q_2\).
-
-To allow a positive input threshold, add a scalar quadratic of curvature
-\(\alpha=[16(K_0+S)]^{-1}\) with initial value \(\alpha v_0^2=C_2\theta\),
-\(v_0>0\). Its pre-checkpoint values \(v_j=v_0\prod_{t\le j}(1-\alpha h_t)\)
-all exceed \(15v_0/16\). Its function inside the same envelope is
-\(P_s(w)=(\alpha-\theta)w^2/[2(1-\alpha)]\), with proximal coordinate
-\(w_j=(1-\alpha)v_j/a\). Set \(J_0=\sqrt{1+v_0^2}\),
-\(e=(1,0,v_0)/J_0\) and \(o=(0,1,0)\), the input and output directions.
-Let \(L\) be the maximum of the supporting affine functions of \(P+P_s\)
-with the prescribed slopes at \(Y_j=(z_j,w_j)\).
-All intercepts and slopes along \(o\) are nonpositive. Slopes along
-\(e\) are at least \([-\theta Z_1+v_0(\alpha-\theta)v_j]/(aJ_0)
-\ge2\theta/a\). Moreover \(L(Y_j)\ge c\alpha v_j^2-C\theta\),
-enough to cover \(C\theta(1+v_0v_j)\) for the absolute constants
-below. Choose \(C_2\) large and then \(\theta(K_0+S)\) small enough
-that \(J_0\le2\).
-
-For \(0\le d\le1\) translate the physical input by \(de\) and set
-\[
- L_d(Y)=L(Y-de/a)-(\theta d/a)\langle e,Y\rangle+
-                  \theta d^2/a-L(-\theta de/a).
-\]
-Then \(L_d(de)=0\), and the preceding margin makes \(L_d\ge0\)
-at every translated proximal query. In \(L_d\) replace the \(e\)
-coordinate by its maximum with \(d\), and the \(o\) coordinate by
-its minimum with \(W/(aD)\). Take the maximum of the result with
-zero to obtain \(U_d\). The slope signs make this a convex majorant
-that preserves the supports at the queries. On \(te\) for \(t\le d\)
-it is zero, and above the output threshold \(W/(aD)\) it is constant
-in direction \(o\).
-
-If \(A\) is the incoming coordinate value and \(s\le(A-s)/2\) its threshold, take
-\(\ell=(A-s)/J_0,\ d=s/\ell\). Identify \(e\) with the preceding
-output and place the perpendicular coordinates in a new orthogonal subspace.
-Use the residual \(\ell^2 U_d(\cdot/\ell)\) for this gap. Its output
-value and threshold are \(\ell(W+b-1)/D\) and \(\ell W/(aD)\).
-At each query later residuals thus have zero subgradient on their
-input ray. During the next gap the prior residual is flat on the
-shared proximal coordinate. Minimizing over its private coordinates
-leaves the prescribed active proximal point unchanged. By induction,
-the sum of the gap residuals under one envelope realizes all the
-transfers. The exact excess ratio is
-\((b-1-\theta W/a)/(D J_0)\), and the outgoing threshold-to-excess
-ratio is \(W/[a(b-1)-\theta W]\).
-
-To obtain \eqref{eq:signed-block-transfer}, multiply this local objective by
-\(1/4\). A step \(h_t\) on the scaled objective is a step \(h_t/4\) on the
-local one, where we take \(\theta=16\mu\) and \(K_0=K/4\). With \(\sigma=32/\log K\) the
-required bound on \(K_0\) follows from \(X_*+W_*\le C e^{3/\sigma}\).
-Now \(\theta W/a\le1\), \(J_0\le e^{C\theta(K_0+S)}\), and
-\(\theta X_*+ac\le1+C/\log K\). Substitution gives the asserted
-transfer with no fixed cost per checkpoint. The threshold ratio is
-\(O(W_*/b)=o(1)\) uniformly for the checkpoints used here, so
-\(s/(A-s)\le1/2\) and \(J_0\le2\) give \(d\le1\) at the next gap.
-
-\paragraph{Three quadratic coordinates distinguish the final query.}\label{app:spectral}
-For \(r\) steps write \(P_j(\lambda)=\prod_{t=1}^j(1-\lambda h_t)\) for
+\paragraph{Distinguishing the last query with three quadratic coordinates.}\label{app:spectral}
+We next prove the separation estimate used to join two portions. For \(r\) steps write \(P_j(\lambda)=\prod_{t=1}^j(1-\lambda h_t)\) for
 \(0\le j\le r\), with \(P_0=1\). Use three quadratic curvatures
 \(\lambda_k=\lambda_0+k\gamma\), \(k=-1,0,1\), spaced by \(\gamma>0\) in
 \([4\mu,20\mu]\). Suppose none of the factors vanishes between the two
@@ -681,7 +571,7 @@ For a previous query \(j\), put \(p=P_r/P_j\). The magnitude of
 the difference in coordinate \(k\) is exactly
 \(T|1/p(\lambda_k)-1|\), regardless of the offsets \(\xi_k\).
 
-Here is why three samples suffice even if signs alternate. Put
+To compare the three products, put
 \(v_t=\gamma h_t/(1-\lambda_0h_t)\). Since \(1-\lambda h_t\) has no
 zero on this interval, \(|v_t|<1\). Factoring the outer two multipliers gives
 \[
@@ -700,15 +590,15 @@ In particular, for \(0<\eta\le1\) choose
 Then the sum is less than one, every term is untruncated, and
 Cauchy--Schwarz gives \(\sum_{t>j}|h_t|\le\eta\).
 
-For a marked interval use \(12\mu,16\mu,20\mu\). Positive steps
+\emph{On a marked interval.} Use \(12\mu,16\mu,20\mu\). Positive steps
 are at most \(\delta/\mu\) or exceed \(1/(4\mu)\), so every product
 is nonzero throughout this interval. At each curvature the large
 steps give at least a factor two, a small positive step costs at most
 \(40\mu h_t\) in log distance, and negative steps cost nothing.
-Start three independent quadratics at \(c_k=T/|P_r(\lambda_k)|\)
+Every such large step pays for the small steps in its preceding gap, whose total positive mass is at most \(\delta\kappa\). The exceptional checkpoints, their preceding gaps, and the final gap cost at most \(O(1+J_I)\) in log distance, where \(J_I\) counts the exceptional repairs in the interval. Start three independent quadratics at \(c_k=T/|P_r(\lambda_k)|\)
 with unit initial norm. Then \(T\ge\min_k|P_r(\lambda_k)|/\sqrt3\).
 
-To continue the trajectory after its last checkpoint, use the same curvatures.
+\emph{After the last checkpoint of a chain.} Use the same three curvatures in the final gap of an unmarked portion.
 In the original stepsize units the objective is \(\theta\|\cdot\|^2/2+
 (L_0-\theta)\operatorname{env}_1 U\), where \(\theta=4\mu\),
 \(L_0=1/4\). Suppose the output has just reached \(s+D\) with \(0\le s\le D\)
@@ -732,8 +622,7 @@ interval of positive mass at most \(\delta/\mu\), write
 \]
 Indeed each prefix product is at least \(1-20\delta\), so
 \(u_{j,k}\ge(s+cD)e_k\). The proximal point of each hinge lies above
-\(se_k\), where the preceding residual attains its minimum along the
-output axis there. Its private coordinates can be minimized separately,
+\(se_k\), where the preceding residual is flat along the output axis. Its private coordinates can be minimized separately,
 so each new gradient is \(\lambda_k u_{j,k}-(\lambda_k-\theta)se_k\).
 In the simpler case, keep the private coordinates at zero. The
 hinge proximal point projects onto the positive output ray, where
@@ -745,8 +634,7 @@ since their projections onto \(e\) are at most \(s\) and at least \(s+cD\), resp
 When the waiting interval ends the schedule, this final norm bound
 alone suffices. An empty input chain starts with \(s=0,D=1\).
 
-A variant handles the arbitrary strings between tested intervals in
-Section~\ref{sec:proof-count}.
+\emph{Between the intervals used in Lemma~\ref{lem:count}.} In this case the schedule in the intervening portion is arbitrary. We choose the three curvatures after seeing its stepsizes.
 Let \(N\) count the steps \(h_t>4K^2\), in the original units.
 Put \(\gamma=\mu/[16(1+r)]\). In the interval
 \([4.5\mu,5.5\mu]\) exclude centers within \(2\gamma\) of any
@@ -754,7 +642,7 @@ positive reciprocal stepsize. These exclusions have total length at
 most \(4r\gamma\le\mu/4\). For every remaining \(\lambda_0\) the
 three curvatures lie in \([4\mu,6\mu]\) and no factor \(1-\lambda h_t\)
 vanishes between them.
-For every \(h>0\) the integral of \(\log^-|1-\lambda h|\) over
+Write \(\log^- x=\max\{0,-\log x\}\). For every \(h>0\) the integral of \(\log^-|1-\lambda h|\) over
 \([4\mu,6\mu]\) is \(O(\mu)\). Indeed, small \(\mu h\) gives a bounded
 integrand, and otherwise substituting \(z=1-\lambda h\) gives
 an upper bound \(2/h\). Averaging the sum over the three translates
@@ -769,6 +657,7 @@ there are no earlier queries to separate.
 
 \paragraph{Starting the next portion on the same function.}\label{app:reset}\label{app:stages}
 We give one construction for any finite list of trajectory portions.
+Fix a sufficiently small absolute constant \(0<\eta_0\le1\).
 For portion \(i\), let \(F_i\) be its \(4\mu\)-strongly convex,
 \(1/4\)-smooth objective, minimized at zero and normalized by \(F_i(0)=0\).
 Start the portion at a point of unit norm. At the end of every portion except
@@ -786,8 +675,7 @@ prescribed starting point, scaled by \(A_{i+1}\), where
 Use \(\eta_i=c_2\eta_0\) when the next portion is the last.
 The loss will depend on each following \(g_{i+1}\) only once.
 
-We first record the local modification used at each switch.
-If \(K_0\) has the base curvature bounds and value and gradient
+\emph{Replacing the objective near the switch.} At a reserved step of size \(b\), a quadratic with curvature \(1/b\) sends its coordinate to zero in one update. We need to insert this quadratic locally. Let \(r>0\). If \(K_0\) has the base curvature bounds and value and gradient
 zero at zero, one can prescribe \(K_1=\lambda\|n\|^2/2\) on
 \(\|n\|\le2r\) and \(K_1=K_0\) on \(\|n\|\ge R=C r/\mu\),
 keeping curvature between \(2\mu\) and \(1/2\), for any
@@ -810,7 +698,7 @@ condition suffices on an arbitrary subset. It therefore gives an
 \(L\)-smooth convex function with our prescribed values and gradients
 on the two regions. Adding back \(\mu\|n\|^2\) gives \(K_1\).
 
-Perform the following construction on each scaled base
+\emph{Coupling two successive portions.} Perform the following construction on each scaled base
 \(F(u)=A_i^2 F_i(u/A_i)\) separately. Abbreviate
 \(u_*=A_iu_i,\ d=A_i d_i(\eta_i),\ b=b_i\).
 Take a copy of its space, initially zero, and rotate \((u,w)\)
@@ -822,7 +710,7 @@ to \((t,n)= (u+\epsilon w,w-\epsilon u)/s\), where
 \]
 The uncoupled iterates of \(T+K_0\) are
 \((u_j/s,-\epsilon u_j/s)\) for the original iterates \(u_j\).
-Write \(t_*=u_*/s,\ n_*=-\epsilon u_*/s\). Choose smooth cutoffs
+Write \(t_*=u_*/s,\ n_*=-\epsilon u_*/s\). Choose smooth cutoffs taking values in \([0,1]\),
 \(\xi(t)\), \(\beta(n)\) that equal one within \(d/(4s)\) of \(t_*\)
 and \(r/4\) of \(n_*\), respectively, and vanish beyond twice
 these radii. Choose \(K_1\) as above with \(\lambda=1/b\).
@@ -848,8 +736,7 @@ total quadratic-form error is at most \((\mu/4)\sum_i\|p_i\|^2\)
 on any vector \((p_i)_i\). The full objective has curvature between
 \(\mu\) and one and is stationary at zero.
 
-It remains to choose \(v\) so that the reserved step reaches the desired
-point in the next subspace. Compare the modified trajectory to that of
+\emph{Landing at the prescribed point.} It remains to choose \(v\) so that the reserved step reaches the desired point in the next subspace. Compare the modified trajectory to that of
 \(T+K_0\), called the reference trajectory here. Until its first query within \(d\)
 of \(u_*\) the modifications at this boundary vanish. From that query
 to the reserved step the absolute stepsizes sum to at most \(\eta_i\).
@@ -893,14 +780,229 @@ of the amplitude recursion and using \(b_i\ge4\) yields
  C\left[1+\sum_{i\ {\rm with\ switch}}\!
        \left(\log\kappa+\log(1+r_i)+\log^- G_{i+1}\right)\right].
 \end{equation}
-Here \(\log^-x=\max(0,-\log x)\). The term for the last portion can
-be omitted from the negative-part sum. In particular the cost of a
-switch is independent of the number of earlier or later switches.
-\subsection{Constructing the trajectories for Section~\ref{sec:proof-count}}\label{app:tests}
-Fix one interval of Section~\ref{sec:proof-count}. Write $h$ for a local stepsize, equal to one quarter of the original stepsize. We return to the original units when we join intervals. The sum of absolute local stepsizes is at most $M$. Use $F_P$ with $\theta=16\mu$ and write $a=1-\theta$. Then the objective $F_P/4$ used with the original steps is $1/4$-smooth and $4\mu$-strongly convex, as required in \eqref{eq:joins-gain}. As in Jeong and Hong~\cite[Sections~4.1, 6.5]{JH}, we construct the function backwards. A new piece ends at the starting point of the suffix already constructed. The identity \eqref{eq:prox-interface} lets us verify the gradients on both pieces by comparing supporting planes.
+The last portion can be omitted from the negative-part sum, since the preceding switch uses \(\eta_i=c_2\eta_0\).
 
-\paragraph{An ordinary checkpoint.}
-Fix a threshold $B+Y$, with $B=e^{u/32}$ and $Y=e^y$ as in Section~\ref{sec:proof-count}. Let $b$ be the selected local stepsize, $t=\min(b,K/4)$ its capped value, and $m,U$ the largest signed prefix sum and the sum of absolute stepsizes in its preceding gap. The norm ratio prescribed by this checkpoint is
+To apply \eqref{eq:joins-gain} in Section~\ref{sec:proof-block}, normalize the
+input to each portion to unit norm. For a chain let \(G_i\) be the excess
+at its last checkpoint, or \(1\) if it has no checkpoint. Its final gap
+has positive mass at most \(\delta\kappa\), and the calculation after
+\eqref{eq:three-radius} gives \(g_i\ge cG_i\). For a marked interval
+let \(G_i=\min_{k=-1,0,1}|P_{r_i}(\lambda_k)|\), where \(r_i\) counts
+its steps, excluding a reserved endpoint. The three quadratic coordinates
+again give \(g_i\ge cG_i\). The whole blocks, the repair estimate,
+and the fragment bound above yield
+\(\sum_i\log^-G_i=O(B+J\log^2\kappa)\).
+There are at most \(2J\) switches, each following a portion of length
+\(r_i\), and \(\sum_i r_i\le n\). Concavity of \(\log(1+x)\) bounds
+the sum of their length terms in \eqref{eq:joins-gain} by
+\(O(J\log(1+n/J))\), interpreted as zero if \(J=0\). This gives the
+claimed loss on the full schedule.
+\subsection{Proof of the count estimate (\ref{eq:count-joint})}\label{app:tests}
+
+Fix an interval \(I\) of the partition \eqref{eq:count-partition}.
+We first specify the lower bound on the norm ratio associated with
+each choice of checkpoints. Jeong and Hong's threshold argument
+then relates the largest of these bounds to \(W_I\). Finally we
+construct strongly convex functions that realize the bounds and join
+the trajectories from different intervals.
+
+\paragraph{Step 1. Selecting checkpoints on one interval.}
+Recall that \(t_j=\min\{h_j/4,s\}\) and \(s=K/4\). At a positive
+checkpoint we reserve part of the step to start the next component. Set
+\[
+ g(t)=
+ \begin{cases}
+ t\min\{1/4,1024^2/\log^2(e+t)\},& t>0,\\
+ 0,&t\le0,
+ \end{cases}
+ \qquad v_j=t_j-g(t_j).
+\]
+We compare \(v_j\) with a threshold. The adjusted count
+\(W=\sup_{z>0}z^q\#\{j\in I:v_j\ge z\}\) satisfies
+\((3/4)^q W_I\le W\le W_I\), since \(3t_j/4\le v_j\le t_j\)
+for every \(t_j>0\). If \(W=0\), this interval contributes nothing
+to the count.
+
+A checkpoint set \(T\subseteq I\) divides its unselected indices into
+gaps, including a gap before the first checkpoint and one after the last.
+For a gap \(U\), let \(m_U\) be the maximum signed prefix sum of the
+\(t_j\), including the empty prefix. The difference
+\(d_U=m_U-\sum_{j\in U}t_j\) measures how far the sum can fall by
+the end of the gap. Write \(S_U=\sum_{j\in U}(t_j)_+\).
+If \(j\) is the checkpoint following \(U\), let \(b_U=g(t_j)\).
+For the terminal gap let \(b_U=s\).
+
+Let \(z_\star\) be a height attaining \(W>0\). For bounded \(z_\star\)
+we already have \(W=O(|I|)\), so we consider large \(z_\star\).
+As in~\cite[(5.6)--(5.9)]{JH}, take \(u\) between a sufficiently
+large absolute constant and \(\log z_\star-4\sqrt{\log z_\star}\).
+For the final comparison near \(z_\star\) we also take \(u=\log z_\star\)
+as in~\cite[Lemma~5.2]{JH}. Put \(B=e^{u/32}\) and let
+\(Y_U=B+m_U+b_U\) and \(Y_U^+=B+S_U+b_U\).
+At level \(y\) we select \(T=\{j:v_j>B+e^y\}\), using
+\(\ge\) when the threshold is approached from below. We also allow
+the extra checkpoints in~\cite[(5.24), (7.12)]{JH}. At the top level
+we select all \(j\) with \(v_j\ge z_\star\). Every capped step has
+the same maximal \(v_j\), since \(t-g(t)\) is increasing for \(t>0\).
+Thus for every selection used below, the gap steps have their original
+local values \(h_j/4\).
+
+The first construction uses a planar trajectory for each selected
+checkpoint. Multiplying the prescribed norm ratios, and allowing an
+error \(C_p/u\) per gap, gives the following lower bound on the log norm
+ratio before the additional losses estimated below:
+\[
+ -A(T)=\log\frac{s\prod_{j\in T}(v_j-B)}
+                      {\prod_{U\ {\rm gap\ of}\ T}Y_U}
+             -\frac{C_p}{u}(|T|+1).
+\]
+Here \(C_p\) is a sufficiently large absolute constant. We refer to
+this choice as the ordinary construction.
+
+For \(e^{u/2}\le B+e^y\le e^{u+\sqrt{u}}\), a second construction
+improves the bound when several successive splits approach the silver
+proportions. Split each interval at the leftmost index maximizing
+\(v_j>0\), and repeat on the intervals to its left and right. Stop on
+intervals with no positive index. This gives a tree with the splitting
+index as the root of each interval. Put
+\(\ell=\lfloor(\log_2 u)/100\rfloor\). On gaps whose next \(\ell+2\)
+levels approach equality, Jeong and Hong use four gradient directions
+to obtain an additional log norm gain of
+\[
+ \tfrac12\sum_{r\in\mathcal A(y)}
+           \bigl(G_\ell(r)-C_p\omega_r\bigr)_+ .
+\]
+We use their set \(\mathcal A(y)\) of gap roots satisfying the adjacency
+and near-equality conditions~\cite[(6.45)--(6.49)]{JH}. In this
+formula \(G_\ell(r)\) is their weighted sum of changes in log ratio
+over the tree below \(r\)~\cite[(6.30)--(6.31)]{JH}, and
+\(\omega_r\) is the corresponding error~\cite[(6.53)]{JH}. In all
+three definitions the heights here are \(v_j\) and the gap sizes are
+\(Y_U\). The factor \(1/2\) converts log squared norm to log norm.
+
+To account for the errors from large steps and gaps, put
+\(V_I=\sum_{j\in I}(1+|\hat h_j|)^{4/9}\). We have \(\sum_I V_I\le Cn\)
+by integrating the tail estimate following \eqref{eq:count-partition};
+the integral converges since \(4/9<1/2\). Choose \(q<d<4/5\).
+For either construction subtract
+\(e_I(y)=C V_I e^{-dy}\) from the stated log gain at its reference
+level \(y\). We call each such choice of level, checkpoints and
+trajectory a test. Let \(Q_I\) be the larger of zero and the supremum
+of its adjusted log gains over all tests on \(I\), with \(Q_I=0\)
+when \(z_\star\) is bounded or \(W=0\).
+We next show that
+\begin{equation}\label{eq:count-scalar}
+ W_I\le C\bigl[V_I+K^q(1+Q_I)\bigr].
+\end{equation}
+
+\paragraph{Step 2. Bounding the count from the checkpoint estimates.}
+It suffices to bound \(W\), since \(W_I\le(4/3)^qW\). Assume
+\(W\ge |I|+K^q\), the remaining case following from \(V_I\ge|I|\).
+We adapt~\cite[Proposition~7.3]{JH}, keeping track of the boundary
+terms \(b_U\) and the errors \(e_I(y)\).
+
+\emph{What changes at a split.} At a split \(j\) the left and right children \(L,R\) receive the terms
+\(g(t_j)\) and \(b_U\). With \(\tau=v_j-B>0\) the prefix identity
+\(m_U=\max(m_L,\sum_Lt_i+t_j+m_R)\) gives
+\[
+ Y_L+Y_R+\tau-Y_U=\min(d_L,t_j+m_R),\qquad
+ Y_L^++Y_R^++\tau-Y_U^+=0.
+\]
+Also \(Y_L\le Y_U\), since both \(g(t)\) and \(t-g(t)\) increase for
+\(t>0\), and the checkpoint following \(U\), if present, is an ancestor
+of \(j\). For a terminal gap its boundary term \(s\) dominates \(g(t_j)\).
+These identities verify the hypotheses of~\cite[Lemma~3.1]{JH} as in
+their Lemma~3.3. At a split close to equality, in the precise sense of
+\cite[Lemma~5.5]{JH} applied to both \(Y\) and \(Y^+\),
+\cite[(5.15)--(5.16)]{JH} give
+\(d_L=O(\delta^2\tau)\) and \(Y_L^+-Y_L=O(\delta\tau)\), where
+\(\delta=u^{-1/10}\). The negative mass on the left is
+\(Y_L^+-Y_L+d_L\); the maximal prefix passes the splitting step, so
+\(d_R=d_U\). Replacing \(\tau\) by \(\tau-d_L\) gives
+\(Y_U=Y_L+Y_R+\tau-d_L\). The corrected change in log ratio is
+\(G_j=\log((\tau-d_L)Y_U/(Y_LY_R))\), as in~\cite[(5.27)--(5.31), (6.9)]{JH}.
+
+\smallskip\noindent\emph{Integrating over thresholds.}
+By the definition of \(Q_I\), adding \(Q_I+e_I(y)\) to the log potential
+\(A(T)\) makes it nonnegative and bounds the additional gain from
+four directions. The same holds for the potential with \(Y_U^+\) in
+place of \(Y_U\), since \(Y_U^+\ge Y_U\). For enlarged sets use the
+same shift at the original reference level. The arithmetic--geometric mean estimate~\cite[(5.1)]{JH} for
+\(\sum_U Y_U^q\) thereby incurs an endpoint cost at most
+\(q e^{qb}(Q_I+e_I(b))\) at level \(b\). The jumps at a fixed level
+are unchanged. In the integration by parts of~\cite[(5.4)]{JH} the
+additional derivative cost on \([a,b]\) is at most
+\[
+ C\int_a^b e^{qy}|e_I'(y)|\,dy\le C V_I e^{-(d-q)a}.
+\]
+The same-level shifts cancel in the comparisons (5.24) and (7.12).
+For the four-direction test, (6.66) bounds the gain pointwise by the shifted
+potential, as needed in (6.70)--(6.71). Since \(a\ge u/4-O(1)\), the
+terms involving \(e_I\), even multiplied by the polynomial window
+factors, are summable over dyadic \(u\). The constant shift costs at
+most \(qK^q Q_I\) at the endpoint and has zero derivative.
+
+\smallskip\noindent\emph{Bounding the terms reserved at checkpoints.} From \(\#\{t_j\ge z\}\le C Wz^{-q}\) one
+obtains by integration
+\[
+ \sum_{t_j\ge e^U}g(t_j)^q\le CW U^{1-2q}.
+\]
+At an interior threshold \(z=B+e^y\) there are \(O(Wz^{-q})\) gaps
+of total unselected positive mass \(O(Wz^{1-q})\). Concavity bounds
+the sum of the \(q\)-powers of those masses by \(CW\); adding the
+gap offsets, including the single terminal \(s\), preserves this
+order. At a near-equality split in~\cite[(5.21)]{JH}, the child's
+positive mass including its boundary term is comparable to \(\tau\).
+If the boundary term supplies at least half of this
+mass, charge \(\tau^q\) to that boundary instead of its steps.
+At interior levels the terminal term \(s\) exceeds a constant
+multiple of \(\tau\), so a child of size comparable to \(\tau\) cannot
+contain it. At a
+fixed boundary there is one left child and possibly a nested sequence
+of right children. Their \(Y^+\) decrease under inclusion, and drop
+by a factor \(1/(1+\sqrt2)+O(\delta)\) at each near-equality split. The sum
+charged to boundary \(j\) is therefore \(O(g(t_j)^q)\). Here
+\(g(t_j)\gtrsim e^{u/4-O(1)}\), so the total cost \(O(Wu^{1-2q})\)
+is within (5.20). All remaining prefix comparisons in (6.61) use
+\(Y_L\le Y_U\).
+
+With these changes the right sides of the summed estimates
+(5.11)--(5.13), (6.68)--(6.71), and (7.12) in~\cite{JH}
+are controlled by \(W+K^qQ_I+V_I\) in place of \(W\).
+Write \(\Phi(u)\) for the average of \(\sum_U(1+m_U+b_U)^q\)
+at thresholds \(\exp(u+t\sqrt u)\), \(0\le t\le1\).
+The weighted sum in \cite[Proposition~7.3]{JH} gives
+\(\Phi(u)-\Phi(u/2)\le C(W+K^qQ_I+V_I)u^{-1/100}\). Changing the offset from
+\(B\) to one there costs at most \(O(WB^q e^{-qu/2})\).
+The top comparison at the closed set, as in \cite[Lemma~5.2]{JH},
+gives \(\Phi(\log z_\star-4\sqrt{\log z_\star})\ge cW-C K^q Q_I-CV_I\).
+At the bottom level \(\bar u\in[U,2U]\), the unselected positive
+steps are bounded in terms of \(U\). Subadditivity and the boundary
+charge estimate give
+\(\Phi(\bar u)\le C_U|I|+K^q+CW U^{1-2q}\).
+Choose successive levels by halving \(\log z_\star-4\sqrt{\log z_\star}\)
+until the level \(\bar u\) lies in \([U,2U]\).
+Summing the differences and fixing \(U\) large absorbs the terms
+proportional to \(W\), since
+\(U^{1-2q}+\sum_{j\ge0}(2^j U)^{-1/100}\to0\).
+This proves \eqref{eq:count-scalar}.
+
+\paragraph{Step 3. Constructing the trajectory for the chosen checkpoints.}
+We now work with the original local stepsizes \(h_j/4\) on the fixed
+interval. Within a gap we denote a local stepsize by \(h\);
+their absolute sum on the interval is at most \(M=2K^2\). We use the objective \(F_P\) in \eqref{eq:prox-interface} with
+\(\theta=16\mu\) and \(a=1-\theta\). With the original stepsizes,
+\(F_P/4\) is \(1/4\)-smooth and \(4\mu\)-strongly convex, as
+required by \eqref{eq:joins-gain}. We construct the trajectory backwards,
+as in Jeong and Hong~\cite[Lemma~4.3 and Section~6.5.3]{JH}.
+Each new piece ends at the starting point of the previously constructed
+suffix. The Moreau-envelope identity \eqref{eq:prox-interface} lets
+us verify the gradients on both pieces by comparing supporting planes,
+following~\cite[Section~4.1]{JH}.
+
+\noindent\emph{An ordinary checkpoint.}
+Fix a threshold \(B+e^y\) from Step~1 and abbreviate \(Y=e^y\). Let $b$ be the selected local stepsize, $t=\min(b,K/4)$ its capped value, and let \(m\) and \(U\) be, respectively, the largest signed prefix sum
+and the sum of absolute stepsizes in its preceding gap. The norm ratio prescribed by this checkpoint is
 \[
  A_b=\frac{t-g(t)-B}{B+m+g(t)}.
 \]
@@ -910,24 +1012,30 @@ Use the planar orbit of Section~\ref{app:arc} with $\sigma=\min\{256/u,768/\log(
 \[
  D=X+\sigma^2(b-1),\qquad Z=(1-X/D,W/D).
 \]
-Now the gap starts at $(1,0)$ and the step $b$ ends at $(0,R)$ with $R=(W+b-1)/D$. The signed prefix estimate of Section~\ref{app:arc} gives $X\le X_*+(1+C/u)m+C\theta M^2$ and $W\le(1+C\theta M)W_*$, where $X_*+W_*\le C e^{3/\sigma}$. The required $\theta e^{4/\sigma}\le\sigma/4$ follows from $t\le K/4$ and $u=O(\log K)$. Thus for $t\le e^{3u}$ we have $X_*\le B$ and $W\le C Y^{.05}$. Above that range $X_*+W_*\le C(e+t)^{1/256}$. In both cases $W\le\sigma^4(b-1)$ and $c_\sigma<\sigma^2(b-1)$ for large $u$, and $Y/u^{C'}\le D\le CM$.
+Now the gap starts at $(1,0)$ and the step $b$ ends at $(0,R)$ with $R=(W+b-1)/D$. The signed prefix estimate of Section~\ref{app:arc} gives $X\le X_*+(1+C/u)m+C\theta M^2$ and $W\le(1+C\theta M)W_*$, where $X_*+W_*\le C e^{3/\sigma}$. The required $\theta e^{4/\sigma}\le\sigma/4$ follows from $t\le K/4$ and $u=O(\log K)$. Thus for $t\le e^{3u}$ we have $X_*\le B$ and $W\le C Y^{.05}$. Above that range $X_*+W_*\le C(e+t)^{1/256}$.
+In both cases $W\le\sigma^4(b-1)$ and $c_\sigma<\sigma^2(b-1)$ for large $u$, and $Y/u^{C'}\le D\le CM$.
 
 Let $J(x,y)=(x,-y)$ denote the reflection and let $\mathcal K$ be the gradient set of Section~\ref{app:arc}. In the representation \eqref{eq:prox-interface}, the corresponding planar convex function is
 \[
  P_0(z)=D^{-1}\max_{v\in\mathcal K}\langle Jv,z-Z/a\rangle
                  -(\theta/a)\langle Z,z\rangle .
 \]
-It satisfies $P_0(0)=0$ by $v_1\ge\sigma^2v_2$ and $W\le\sigma^4(b-1)$. At a planar query its proximal point has $z_1\ge0$, $z_2\le W/(aD)$, and $\|z\|\le CM$, by the projection formula of Section~\ref{app:arc}. The second coordinate of each supporting slope of $P_0$ at these queries is nonpositive, and $P_0(z)\ge-C\theta M$ by testing $v=0$.
+It satisfies $P_0(0)=0$ by $v_1\ge\sigma^2v_2$ and $W\le\sigma^4(b-1)$. At a planar query, the point at which the minimum in the Moreau envelope
+is attained has $z_1\ge0$, $z_2\le W/(aD)$, and $\|z\|\le CM$, by the projection formula of Section~\ref{app:arc}. The second coordinate of each supporting slope of $P_0$ at these queries is nonpositive, and $P_0(z)\ge-C\theta M$ by testing $v=0$.
 
 We add one scalar coordinate $w$. Its contribution makes the supporting plane of the current piece active at each query in the gap. We also need the checkpoint to send $w$ to zero so that the next piece starts on its input axis. Set $\alpha=1/[16(1+b+U)]$ and let $T>0$ be the value of $w$ just before the checkpoint, to be chosen below. On the positive axis take a continuous derivative $k$ with $k(0)=0$, successive slopes $\alpha,1/2,\theta$, and breakpoints
 \[
  v_*=T\frac{1/2-1/b}{1/2-\alpha},\qquad T.
 \]
-Set $k(-w)=-k(w)$. Since $k(T)=T/b$, the step $b$ sends $T$ to zero. Obtain the earlier iterates $w_j$ by inverting the gap steps from $T$. For $h>0$ the map $w\mapsto w-hk(w)$ has a positive preimage at least as large as its positive target, by continuity and $1-\theta h>0$. For $h<0$ the preimage is at least the smaller of $v_*$ and the target divided by $1+\alpha|h|$. Hence every $w_j$ is at least $v_*e^{-\alpha U}\ge T/3$. If $w_0>T$, stop at the first $w_j\le T$. Until that step all gradients are evaluated on the last linear segment, so $w_j+d=(w_0+d)\prod_{i\le j}(1-\theta h_i)$ with $d=T(1/b-\theta)/\theta$. Inverting this product gives
+Set $k(-w)=-k(w)$. Since $k(T)=T/b$, the step $b$ sends $T$ to zero. Obtain the earlier iterates $w_j$ by inverting the gap steps from $T$. For $h>0$ the map $w\mapsto w-hk(w)$ has a positive preimage at least as large as its positive target, by continuity and $1-\theta h>0$. For $h<0$ the preimage is at least the smaller of $v_*$ and the target divided by $1+\alpha|h|$. Hence every $w_j$ is at least $v_*e^{-\alpha U}\ge T/3$.
+
+To bound the initial value, suppose $w_0>T$ and stop at the first $w_j\le T$. Until that step all gradients are evaluated on the last linear segment, so $w_j+d=(w_0+d)\prod_{i\le j}(1-\theta h_i)$ with $d=T(1/b-\theta)/\theta$. Inverting this product gives
 \begin{equation}\label{eq:physical-clock}
  w_0\le T\bigl(1+(m+C\theta M^2)/b\bigr).
 \end{equation}
-The same bound holds at each query with $m$ replaced by the sum of positive gap steps. Define $P_s$ by $P_s(0)=0$ and slope $(k(w)-\theta w)/a$ at $z_s=(w-k(w))/a$. The map $w\mapsto z_s$ is increasing onto $\mathbb R$ and the specified slopes are nondecreasing, so $P_s$ is convex. At the queries, $c\alpha T\le k(w)-\theta w\le T/b$. Evaluating on the first segment at $w=T/3$ also gives $P_s(z_s)\ge c\alpha T^2$, since $\theta\ll\alpha$.
+The same bound holds at each query with $m$ replaced by the sum of positive gap steps.
+
+Define $P_s$ by $P_s(0)=0$ and slope $(k(w)-\theta w)/a$ at $z_s=(w-k(w))/a$. The map $w\mapsto z_s$ is increasing onto $\mathbb R$ and the specified slopes are nondecreasing, so $P_s$ is convex. At the queries, $c\alpha T\le k(w)-\theta w\le T/b$. Evaluating on the first segment at $w=T/3$ also gives $P_s(z_s)\ge c\alpha T^2$, since $\theta\ll\alpha$.
 
 The initial point is $J_1 e$, where $J_1=\sqrt{1+w_0^2}$ and $e=(1,0,w_0)/J_1$. Take $o=(0,1,0)$ as the input direction of the suffix, and scale the suffix to start at $Ro$. Suppose its convex function in \eqref{eq:prox-interface} is at most $k'Rz_+$ at $zo$, for some $k'\ge0$, and its proximal points have nonnegative projection on $o$. At the current proximal points its value is at most $Ck'bW/D^2$. Choose
 \begin{equation}\label{eq:physical-amplitude}
@@ -939,15 +1047,20 @@ and define $P$ as the maximum of the suffix function, zero, and the supporting p
 \end{equation}
 Indeed, the planar slope on the first coordinate lies between $-\theta Z_1/a$ and $c_\sigma/D+\theta\|Z\|/a$. The scalar contribution makes the total input slope nonnegative since $w_0(k(w_j)-\theta w_j)\ge c\alpha T^2$, and $w_0T/J_1^2\le3$. All later pieces are perpendicular to $e$.
 
-For interior joins take a common $k'=u^{C'}/Y$ large enough for \eqref{eq:physical-input} and the four-direction input bound below. Equations \eqref{eq:physical-clock}--\eqref{eq:physical-amplitude} give
+To continue backwards, the bound on \(P(ze)\) must hold in the same
+form as for the suffix. Dividing \eqref{eq:physical-input} by the input
+scale \(J_1\) gives \(k'=u^{C'}/Y\) as a common upper bound, since
+\(D,b\ge Y/u^{C''}\). We use the same \(k'\) for the four-direction
+construction below. Equations \eqref{eq:physical-clock}--\eqref{eq:physical-amplitude} give
 \[
  DJ_1\le D+C\sqrt\theta\, M^{7/2}
        +C(b+m+C\theta M^2)\sqrt{(1+b+U)Wk'/b}.
 \]
-When $t\le e^{3u}$ and $U\le Y^{9/5}$ the square root is $O(u^{C''}Y^{-.075})$. Multiply by $t/b$, use $g(t)\gtrsim t/u^2$, and recall the bound on $X$. For large $u$ we have $\sigma^2t\le(3/4)g(t)$ by the choices of $g$ and $\sigma$. The remaining quarter of $g(t)$ absorbs the term proportional to $t$ in the error. This gives $(t/b)DJ_1\le (B+m+g(t))e^{C/u}$. Since $(t/b)(W+b-1)\ge t-g(t)-B$, the actual gain $R/J_1$ is at least $A_b e^{-C/u}$. Above either cutoff the same inequality loses at most an extra factor polynomial in $1+U$ or $e+t$, respectively, by the displayed bound for $DJ_1$ and $X_*+W_*\le C(e+t)^{1/256}$ when $t>e^{3u}$. The factor $t/b$ permits $b$ to exceed its capped value $t$ by an arbitrary factor.
+When $t\le e^{3u}$ and $U\le Y^{9/5}$ the square root is $O(u^{C''}Y^{-.075})$. Multiply by $t/b$, use $g(t)\gtrsim t/u^2$, and recall the bound on $X$. For large $u$ we have $\sigma^2t\le(3/4)g(t)$ by the choices of $g$ and $\sigma$. The remaining quarter of $g(t)$ absorbs the term proportional to $t$ in the error. This gives $(t/b)DJ_1\le (B+m+g(t))e^{C/u}$. Since $(t/b)(W+b-1)\ge t-g(t)-B$, the actual gain $R/J_1$ is at least $A_b e^{-C/u}$. If instead $U>Y^{9/5}$ or $t>e^{3u}$, the same inequality loses at most an extra factor polynomial in $1+U$ or $e+t$, respectively, by the displayed bound for $DJ_1$ and $X_*+W_*\le C(e+t)^{1/256}$ when $t>e^{3u}$. The factor $t/b$ permits $b$ to exceed its capped value $t$ by an arbitrary factor.
 
-\paragraph{Preparing the next gap for four gradient directions.}
-Put $\rho=1+\sqrt2$ and $\delta=u^{-1/10}$. On a gap indexed by $v\in\mathcal A(y)$, we use the four directions of Jeong and Hong~\cite[Lemmas~6.1--6.3]{JH}. We first show that the next gap satisfies the two conditions that permit this construction. In their notation~\cite[(6.33)]{JH}, if the suffix begins at $Y_0$, its convex function $P$ must satisfy, for constants $H>0$ and $Z_0\ge0$,
+\smallskip\noindent\emph{Preparing the following gap.}
+Put $\rho=1+\sqrt2$ and $\delta=u^{-1/10}$. On a gap indexed by $v\in\mathcal A(y)$, we use the four directions of Jeong and Hong~\cite[Lemmas~6.1--6.3]{JH}. The construction starts at the end of such a gap and works backwards.
+Its first requirement is a bound on the function already constructed for the following trajectory. In their notation~\cite[(6.33)]{JH}, if the suffix begins at $Y_0$, its convex function $P$ must satisfy, for constants $H>0$ and $Z_0\ge0$,
 \begin{equation}\label{eq:physical-interface}
  P(sY_0)\le s_+\|Y_0\|^2/H,\qquad
  0\le\langle Y_0,w\rangle,\quad
@@ -955,7 +1068,7 @@ Put $\rho=1+\sqrt2$ and $\delta=u^{-1/10}$. On a gap indexed by $v\in\mathcal A(
 \end{equation}
 at every suffix proximal query $w$, with the ray bound valid for all real $s$.
 
-Let $r$ index the gap immediately following the checkpoint after $v$, as in~\cite[(6.48)]{JH}. Suppose we use the ordinary construction on that gap and write $j$ for its following checkpoint. Its positive steps sum to at most $CY$ by the near-equality estimate for the positive sums. Its drop $d_r$ is at most that of the left child of $j$, since the two intervals have the same right endpoint. Thus $d_r\le C\delta^2\rho^\ell Y$ by~\cite[(5.15), (6.47)]{JH}; the sum of absolute stepsizes satisfies $U=O(Y)$. The step at $r$ has size $(1+o(1))(v_r-B)\asymp Y$, and its preceding negative steps have total absolute size $O(\delta h_r)$ by \cite[(5.16)]{JH}. Section~\ref{app:arc} gives $X\ge(1-o(1))h_r$. Writing $Y_r=B+m_r+g(t_j)$ for $Y_U$ on the gap indexed by $r$, we obtain $D\asymp Y$, $D\le(1+o(1))Y_r$, $b\le C\rho^\ell Y$, and $Z_1\le C\rho^\ell/u^2$. These steps are uncapped by \cite[(5.6)--(5.9), (6.46)--(6.49)]{JH}. Equations \eqref{eq:physical-clock}--\eqref{eq:physical-amplitude} give $\max w_j\le CT$ and $T^2\le C\theta M^3+u^C Y^{-.15}$.
+Let $r$ index the gap immediately following the checkpoint after $v$, as in~\cite[(6.48)]{JH}. Suppose we use the ordinary construction on that gap and write $j$ for its following checkpoint. The positive steps in this gap sum to at most $CY$ by the near-equality estimate for the positive sums. Its drop $d_r$ is at most that of the left child of $j$, since the two intervals have the same right endpoint. Thus $d_r\le C\delta^2\rho^\ell Y$ by~\cite[(5.15), (6.47)]{JH}; the sum of absolute stepsizes satisfies $U=O(Y)$. Write \(h_r\) for the stepsize at the splitting index \(r\). Its size is $(1+o(1))(v_r-B)\asymp Y$, and its preceding negative steps have total absolute size $O(\delta h_r)$ by \cite[(5.16)]{JH}. Section~\ref{app:arc} gives $X\ge(1-o(1))h_r$. Writing $Y_r=B+m_r+g(t_j)$ for $Y_U$ on the gap indexed by $r$, we obtain $D\asymp Y$, $D\le(1+o(1))Y_r$, $b\le C\rho^\ell Y$, and $Z_1\le C\rho^\ell/u^2$. These steps are uncapped by \cite[(5.6)--(5.9), (6.46)--(6.49)]{JH}. Equations \eqref{eq:physical-clock}--\eqref{eq:physical-amplitude} give $\max w_j\le CT$ and $T^2\le C\theta M^3+u^C Y^{-.15}$.
 
 To supply the lower bound in \eqref{eq:physical-interface}, also include the hinge
 \[
@@ -964,17 +1077,22 @@ To supply the lower bound in \eqref{eq:physical-interface}, also include the hin
 \]
 At a present query its positive affine part is at most $(c_\sigma/D)(z_1-Z_1/a)$, which is supplied by using $(c_\sigma,0)$ in the definition of $P_0$ and bounding its negative linear term with $P_s$. Its value at every subsequent query is zero. The normalized input slopes of all planes, including the hinge, are at most $6/D$ by $D/b=O(1)$ and the scalar correction $O(T^2/b)$. Thus \eqref{eq:physical-interface} holds at $Y_0=J_1e$ with $H=D/6$ and $Z_0=z_*/J_1\le u^{-3/2}$; moreover $(v_r-B)/(8\rho^\ell)\le H\le Y_r/5$.
 
-\paragraph{Four directions under quadratic contraction.}
+\smallskip\noindent\emph{Four directions under quadratic contraction.}
 Fix a gap whose root $r$ belongs to $\mathcal A(y)$. The $2^\ell$ intervals at depth $\ell$ of its tree are the cells. Each cell has four successive phases, each consisting of a gap and its checkpoint, as in~\cite[(6.12), (6.55)--(6.58)]{JH}. Their common scale is $M_c=\rho^{-\ell-2}Y_r$. Within one cell start $\chi_0=1$ and write $\chi_i=\prod_{t\le i}(1-\theta h_t)$, $\bar h_i=a h_i/\chi_i$, and $\chi$ for the final product. For phase $j=0,\ldots,3$, let $b$ be its checkpoint stepsize, $\bar b$ its rescaled value, and let $\bar m,\bar d$ be the maximum prefix sum and the drop to the final prefix sum for the steps $\bar h_i$ in its gap. Define
 \[
  M_c\mu_j=B+\bar m+g(b),\qquad M_c k_j=\bar b-g(b)-B-\bar d .
 \]
 Thus $\mu_j+k_j$ is the sum of the rescaled stepsizes in phase $j$, divided by $M_c$. Each prefix sum $\xi$ of the rescaled gap steps satisfies $\xi+\chi_i^{-1}\le M_c\mu_j$ since $\chi_i^{-1}\le2\le B$. All the steps here are uncapped. Replacing the rescaled steps by the original local steps changes every normalized parameter by $O(\theta M^2/M_c)$.
 
-Write $\tau_j=\mu_j+k_j$. First set $\theta=0$. For each gap indexed by $w$, let $j(w)$ be its following checkpoint and $q_w=(v_{j(w)}-B-d_w)/Y_w$. At a near-equality split $w$ with children $L,R$, the right child retains $d_w$ and its boundary term. This gives $q_Lq_R/q_w=e^{G_w}$, where $G_w$ is the corrected change in the logarithm at this split, as in~\cite[(6.9)--(6.10)]{JH}. The near-equality estimates \cite[(6.51)--(6.60)]{JH} therefore apply with the boundary terms $b_U$. They give
-$\mu_j=1+O((\ell+2)\delta)$, $(k_0,k_1,k_2)=(\rho^{-1},1,\rho^{-1})+O((\ell+2)\delta)$ and $1-o(1)\le k_3\le C\rho^{2\ell}$, with the perturbation above absorbed. Let $N$ be the largest negative mass in the first three barred gaps. Then $N=O(\delta M_c)$ by~\cite[(5.16)]{JH}.
+Write \(\tau_j=\mu_j+k_j\). We first evaluate the phase parameters
+at \(\theta=0\) and then use the preceding perturbation estimate. For each gap indexed by $w$, let $j(w)$ be its following checkpoint and $q_w=(v_{j(w)}-B-d_w)/Y_w$. At a near-equality split $w$ with children $L,R$, the right child retains $d_w$ and its boundary term. This gives $q_Lq_R/q_w=e^{G_w}$, where $G_w$ is the corrected change in the logarithm at this split, as in~\cite[(6.9)--(6.10)]{JH}. The near-equality estimates \cite[(6.51)--(6.60)]{JH} therefore apply with the boundary terms $b_U$. They give
+$\mu_j=1+O((\ell+2)\delta)$, $(k_0,k_1,k_2)=(\rho^{-1},1,\rho^{-1})+O((\ell+2)\delta)$ and $1-o(1)\le k_3\le C\rho^{2\ell}$, with the perturbation above absorbed. Let \(N\) be the largest of the three sums of \((-\bar h_i)_+\) over the
+first three gaps. Then $N=O(\delta M_c)$ by~\cite[(5.16)]{JH}.
 
-To verify \eqref{eq:physical-interface} between consecutive cells, use $(H,Z_0)=(M_c,0)$. The last cell uses the ordinary entrance described above, or $(\rho^{-\ell-2}Y_{\rm next},0)$ if the next gap also uses four directions, where $Y_{\rm next}$ is that gap's size. By the entrance bounds $cM_c\le H$ and $H/(M_ck_3)\le(\rho+O(\delta))/5<1/2$, as in \cite[(6.59)--(6.61)]{JH}. Indeed $H\le Y_{\rm next}/5$ also at an internal boundary since $M_c/Y_{\rm next}=(1+o(1))\rho^{-2}$. Passing left from the right child of the common checkpoint to the successor can only decrease its prefix maximum and charge. Put $\zeta=k_3 Z_0$ so that $\zeta=O(1/u)$, nonzero only in the last cell.
+To verify \eqref{eq:physical-interface} between consecutive cells, use $(H,Z_0)=(M_c,0)$. At the last cell, use the pair supplied by the ordinary construction in the
+following gap. If that gap also uses four directions, take
+\((\rho^{-\ell-2}Y_{\rm next},0)\), where \(Y_{\rm next}\) is its size.
+The preceding bounds give $cM_c\le H$ and $H/(M_ck_3)\le(\rho+O(\delta))/5<1/2$, as in \cite[(6.59)--(6.61)]{JH}. Indeed $H\le Y_{\rm next}/5$ also at an internal boundary since $M_c/Y_{\rm next}=(1+o(1))\rho^{-2}$. Passing left from the right child of the common checkpoint to the successor can only decrease its prefix maximum and charge. Write \(\zeta=k_3 Z_0=O(1/u)\); only the last cell can have \(\zeta>0\).
 
 Take the four unit gradient directions $\varphi_j$ and the phase starting points $Q_j$ from \cite[Lemma 6.1]{JH}, with $e=Y_0/\|Y_0\|$, $\varphi_3=-e$ and $\langle e,\varphi_j\rangle=d_\varphi$ for $j<3$. In these parameters $d_\varphi\to1/(2\rho)<1/4$, so the preceding bounds give $2\chi k_3 N\le H$ and $8d_\varphi H\le M_c\chi(k_3-\zeta)$ with slack. Set
 \[
@@ -982,37 +1100,60 @@ Take the four unit gradient directions $\varphi_j$ and the phase starting points
  \psi(z)=\frac{\lambda^2}{M_c}\big(\max_j\langle\varphi_j,z/\lambda\rangle-d_\varphi\chi\zeta\big)_+,
  \qquad \Psi=\max(P,\psi).
 \]
-Extend $P$ by orthogonal projection onto the suffix space and take all new directions perpendicular to the suffix except $e$. At a phase-$j$ prefix the intended point is $x=\lambda\chi_i(Q_j-\xi\varphi_j/M_c)$. Its intended proximal point $w=x-\lambda\varphi_j/M_c$ equals $\lambda\chi_i\widehat z$ with
+Extend $P$ by orthogonal projection onto the suffix space and take all new directions perpendicular to the suffix except $e$. After a prefix of phase \(j\) with rescaled sum \(\xi\), we prescribe the iterate $x=\lambda\chi_i(Q_j-\xi\varphi_j/M_c)$. Its intended proximal point $w=x-\lambda\varphi_j/M_c$ equals $\lambda\chi_i\widehat z$ with
 $\widehat z=Q_j-\mu_j\varphi_j+s\varphi_j$, $s=\mu_j-(\xi+\chi_i^{-1})/M_c\ge0$.
-By \cite[Lemma 6.1]{JH}, plane $j$ maximizes there. For $j<3$, comparison with $-e$ at $s=0$ gives $A=\langle\varphi_j,\widehat z\rangle\ge d_\varphi\mu_j$, hence $A-d_\varphi\chi\zeta/\chi_i\ge d_\varphi/2$. Also $\langle e,\widehat z\rangle_+\le d_\varphi N/M_c$, so the first inequality in \eqref{eq:physical-interface} and $2\chi k_3N\le H$ give $P(w)\le\lambda^2\chi_i d_\varphi/(2M_c)\le\psi(w)$. For $j=3$, $\widehat z=-(\zeta+s)e$, hence $P(w)=0$ and the active plane lies at or above the cutoff since $s+\zeta(1-d_\varphi\chi/\chi_i)\ge0$. Thus $\lambda\varphi_j/M_c\in\partial\Psi(w)$. Dividing the GD update by $\lambda\chi_{i+1}$ now gives the step $\bar h_{i+1}$, ending the fourth phase at $Y_0$. Conversely at a suffix query $\psi(w)=(\lambda d_\varphi/M_c)(\langle e,w\rangle-\lambda\chi\zeta)_+\le P(w)$ by $8d_\varphi H\le M_c\chi(k_3-\zeta)$ and $\lambda\chi\zeta\ge Z_0\|Y_0\|$. Both sets of iterates are therefore retained.
+By \cite[Lemma 6.1]{JH}, plane $j$ maximizes there. For $j<3$, comparison with $-e$ at $s=0$ gives $A=\langle\varphi_j,\widehat z\rangle\ge d_\varphi\mu_j$, hence $A-d_\varphi\chi\zeta/\chi_i\ge d_\varphi/2$. Also $\langle e,\widehat z\rangle_+\le d_\varphi N/M_c$, so the first inequality in \eqref{eq:physical-interface} and $2\chi k_3N\le H$ give $P(w)\le\lambda^2\chi_i d_\varphi/(2M_c)\le\psi(w)$. For $j=3$, $\widehat z=-(\zeta+s)e$, hence $P(w)=0$ and the active plane lies at or above the cutoff since $s+\zeta(1-d_\varphi\chi/\chi_i)\ge0$. Thus $\lambda\varphi_j/M_c\in\partial\Psi(w)$. Dividing the GD update by $\lambda\chi_{i+1}$ now gives the step $\bar h_{i+1}$, ending the fourth phase at $Y_0$. Conversely at a suffix query $\psi(w)=(\lambda d_\varphi/M_c)(\langle e,w\rangle-\lambda\chi\zeta)_+\le P(w)$ by $8d_\varphi H\le M_c\chi(k_3-\zeta)$ and $\lambda\chi\zeta\ge Z_0\|Y_0\|$. Thus taking the maximum preserves the gradients on both the new cell
+and the previously constructed suffix.
 
 At the new input $\lambda Q_0\perp e$, \eqref{eq:physical-interface} holds with $(M_c,0)$. Indeed $Q_0=\sum_{j<3}\tau_j\varphi_j+(\mu_3+\zeta)\varphi_3$ has nonnegative inner products with all $\varphi_j$, bounded by $\|Q_0\|^2$ since $\tau_j>1$ and $Q_0\perp e$. At current queries of the first three phases,
 $0\le\langle Q_0,\widehat z\rangle\le7A\le8(A-d_\varphi\chi\zeta/\chi_i)$. The first inequality follows by expanding $\widehat z=Q_3+(k_j+s)\varphi_j+\sum_{j<l<3}\tau_l\varphi_l$, the second from $\sum_{j<3}\tau_j+\mu_3+\zeta\le7$ and the maximizing-plane property. The last follows from $\mu_j\ge3/5$ and $\chi\zeta/\chi_i\le1/32$. The remaining proximal points are perpendicular to $Q_0$.
 
-The squared norm multiplier per cell is $\chi^2(k_3-\zeta)^2/\|Q_0\|^2$. First evaluate the calculation of Jeong and Hong~\cite[(6.20), (6.28)--(6.32)]{JH} with the original local stepsizes and $\zeta=0$. Their formula for $\|Q_0\|$ is smooth and bounded away from zero near the equality case, and independent of $k_3$ for fixed $\zeta$. Thus the total change in log squared gain is $O(2^\ell\theta M^2+|\zeta|)=O(1/u)$. The errors in (6.29) add to the term in $\omega_r$ involving the descendants, while $d_r/(v_{j(r)}-B)$ converts $q_r$ to the ordinary factor. We obtain precisely the bound needed in Section~\ref{sec:proof-count},
+The squared norm multiplier per cell is $\chi^2(k_3-\zeta)^2/\|Q_0\|^2$. To compare it with the ordinary factor, apply the calculation of Jeong and Hong~\cite[(6.20), (6.28)--(6.32)]{JH} with the original local stepsizes and $\zeta=0$. Their formula for $\|Q_0\|$ is smooth and bounded away from zero near the equality case, and independent of $k_3$ for fixed $\zeta$. Thus the total change in log squared gain is $O(2^\ell\theta M^2+|\zeta|)=O(1/u)$. The errors in (6.29) add to the term in $\omega_r$ involving the descendants, while $d_r/(v_{j(r)}-B)$ converts $q_r$ to the ordinary factor. We obtain the additional log squared-norm gain used in Step~1,
 \begin{equation}\label{eq:physical-enhanced}
  \log\frac{\|x_{\rm end}\|^2}{\|x_{\rm start}\|^2}
  \ge 2\log\frac{v_{j(r)}-B}{Y_r}+G_\ell(r)-C(\omega_r+1/u).
 \end{equation}
 
-\paragraph{One objective for all the intervals.}
-On each interval $I$ choose any allowed test, independently of the other intervals. Write $S_I$ for its log gain after subtracting $e_I(y)$ as in Section~\ref{sec:proof-count}, and take $S_I=0$ on intervals without a test. For every such choice on a stable schedule we construct one admissible objective satisfying
+\paragraph{Step 4. Joining the intervals.}
+Choose a test independently on each interval \(I\) and write \(S_I\)
+for its log gain after subtracting the error \(e_I(y)\) of Step~1.
+An interval without a test has \(S_I=0\). For every such choice on a
+stable schedule we construct one admissible objective satisfying
 \begin{equation}\label{eq:physical-simultaneous}
  \log\frac{\|x_n\|}{\|x_0\|}\ge\sum_I(S_I)_+-Cn/K^q .
 \end{equation}
-Write $J=|\mathcal I|$. The tests use cap $s=K/4$ and terminal charge $s$ in local units. The stepsizes $h_t$ below are in physical units.
+We first multiply the gains within each interval, still in local units.
+We then join the intervals using the original stepsizes \(h_t\).
 
-First multiply the gains within one interval. Bound \eqref{eq:physical-enhanced} adds half the lower bound on the log squared-norm improvement for each gap using four directions. The $C/u$ costs fit the penalty $C_p(|T|+1)/u$ in $A(T)$, and the terminal factor $s/(s+B+m_{\rm tail})$ is at most one. For disjoint gaps of local absolute mass $U$, concavity gives $\sum U^{4/9}\le V_I$. Integrating $\#\{U\ge z\}\le V_I z^{-4/9}$ above $Y^{9/5}$, including the endpoint term, bounds the large-gap losses by $C(1+y)V_Ie^{-4y/5}$. The steps above $e^{3u}$ contribute at most $C(1+u)V_Ie^{-4u/3}$. Both are covered by $e_I(y)$ since $d<4/5$ and $y\le u+3\sqrt u$.
+On one interval, \eqref{eq:physical-enhanced} adds half the lower bound on the log squared-norm improvement for each gap using four directions. The $C/u$ costs fit the penalty $C_p(|T|+1)/u$ in $A(T)$, and the terminal factor $s/(s+B+m_{\rm tail})$ is at most one. For disjoint gaps of local absolute mass $U$, concavity gives $\sum U^{4/9}\le V_I$. Integrating $\#\{U\ge z\}\le V_I z^{-4/9}$ above $Y^{9/5}$, including the endpoint term, bounds the large-gap losses by $C(1+y)V_Ie^{-4y/5}$. The steps above $e^{3u}$ contribute at most $C(1+u)V_Ie^{-4u/3}$. Both are covered by $e_I(y)$ since $d<4/5$ and $y\le u+3\sqrt u$.
 
-Discard intervals with $S_I\le0$. In each remaining interval reserve the first and last checkpoints of the chosen set to connect the interval to the preceding and following trajectories. Keep the middle pieces, making the last of them ordinary with empty suffix ($k'=0$). Include the additional hinge above if the preceding piece uses four directions. These changes cost $O(\log\kappa)$ per interval. An ordinary factor is at most $M$. A gap using four directions has log norm gain at most $C(1+\ell)2^\ell$ by the cell multiplier and $k_3\le C\rho^{2\ell}$; hence \eqref{eq:physical-enhanced} bounds its counted gain by this amount after subtracting the stated errors. Also $2^\ell\le u^{1/100}$, and a replacement ordinary factor is at least $\kappa^{-C}$ by its explicit $R,J_1$ and $k'=0$. Any interval with fewer than four pieces contributes only $O(\log\kappa)$ and may be skipped.
+Discard intervals with $S_I\le0$. In each remaining interval reserve the first and last checkpoints of the chosen set to connect the interval to the preceding and following trajectories. Keep the middle pieces, making the last of them ordinary with empty suffix ($k'=0$). Include the additional hinge above if the preceding piece uses four directions.
 
-The last ordinary piece ends at $Ro$, where all coordinates perpendicular to $o$ are zero. Its planes have nonpositive intercepts and nonpositive slopes along $o$. The added hinge, if present, and the preceding pieces use directions perpendicular to $o$, so the full residual vanishes on the ray $\{zo:z\ge0\}$. Before this endpoint, the physical iterates and their proximal points project onto $o$ at coordinates at most $s_o=W/(aD)$. Moreover $s_o/(R-s_o)=W/[a(b-1)-\theta W]\le1$ because $W\le\sigma^4(b-1)$. Both properties persist under scaling.
+These changes cost $O(\log\kappa)$ per interval. An ordinary factor is at most $M$. A gap using four directions has log norm gain at most $C(1+\ell)2^\ell$ by the cell multiplier and $k_3\le C\rho^{2\ell}$; hence \eqref{eq:physical-enhanced} bounds its counted gain by this amount after subtracting the stated errors. Also $2^\ell\le u^{1/100}$, and a replacement ordinary factor is at least $\kappa^{-C}$ by its explicit $R,J_1$ and $k'=0$. Any interval with fewer than four pieces contributes only $O(\log\kappa)$ and may be skipped.
 
-Use the three quadratic coordinates from Section~\ref{app:arc} to continue the trajectory through the final open gap up to the last reserved checkpoint. The sum of its absolute stepsizes in the original units is at most $4M=o(\kappa)$, and every reserved step belongs to $[4,\kappa/4]$ for large $\kappa$. For unit initial norm, the lower bound $G_i$ on the final norm satisfies $G_i\ge\exp(S_I-C\log\kappa)$, since the output exceeds the threshold by at least half its norm. At the last query the radius in \eqref{eq:three-radius} is at least $cG_i\mu^2\eta^2/(1+r_i)$, where $r_i$ is the number of steps in this final gap.
+We next verify the separation needed at the last reserved checkpoint.
+The last ordinary piece ends at \(Ro\), where all coordinates perpendicular to $o$ are zero. Its planes have nonpositive intercepts and nonpositive slopes along $o$. The added hinge, if present, and the preceding pieces use directions perpendicular to $o$, so the full residual vanishes on the ray $\{zo:z\ge0\}$. Before this endpoint, the physical iterates and their proximal points project onto $o$ at coordinates at most $s_o=W/(aD)$. Moreover $s_o/(R-s_o)=W/[a(b-1)-\theta W]\le1$ because $W\le\sigma^4(b-1)$. Both properties persist under scaling.
+
+Use the three quadratic coordinates from Section~\ref{app:arc} to continue the trajectory through the final open gap up to the last reserved checkpoint. The sum of its absolute stepsizes in the original units is at most $4M=o(\kappa)$, and every reserved step belongs to $[4,\kappa/4]$ for large $\kappa$. For unit initial norm, the lower bound $G_i$ on the final norm satisfies $G_i\ge\exp(S_I-C\log\kappa)$, since the output exceeds the threshold by at least half its norm. For every \(0<\eta\le\eta_0\), where \(\eta_0\) is the absolute constant
+in the joining construction of Appendix~\ref{app:arc}, the radius
+\eqref{eq:three-radius} at the last query is at least $cG_i\mu^2\eta^2/(1+r_i)$, where $r_i$ is the number of steps in this final gap.
 
 Between retained intervals, as well as before the first and after the last, use the three quadratics of Appendix~\ref{app:arc}. On each such portion their total loss in log norm is at most $C(1+\#\{t:h_t>4K^2\}+\mu\sum_{0<h_t\le4K^2}h_t)$, and the corresponding radius is at least $cG_i\mu^2\eta^2/(1+r_i)^3$. An empty portion has no earlier query to separate. If no interval survives, use the three quadratics throughout.
 
-To apply \eqref{eq:joins-gain}, sum the losses on the retained intervals and the quadratic portions. This sum also bounds $\sum_i\log^-G_i$, since each retained interval has $S_I>0$. By \eqref{eq:count-partition} there are $O(n/K)$ portions and discarded steps in total, and the retained absolute mass is $O(nK)$. The scanned lengths sum to at most $n$, so concavity gives $\sum_i\log(1+r_i)=O((n/K)\log(1+K))$. The total loss from $\sum_I(S_I)_+$ in \eqref{eq:joins-gain} is therefore $O((n/K)\log\kappa+\mu nK)=O(n/K^q)$, as claimed.
+To apply \eqref{eq:joins-gain}, sum the losses on the retained intervals and the quadratic portions. This sum also bounds $\sum_i\log^-G_i$, since each retained interval has $S_I>0$. By \eqref{eq:count-partition} there are $O(n/K)$ portions and discarded steps in total, and the retained absolute mass is $O(nK)$. The lengths \(r_i\) of these portions and final gaps sum to at most \(n\), so concavity gives $\sum_i\log(1+r_i)=O((n/K)\log(1+K))$. The total loss from $\sum_I(S_I)_+$ in \eqref{eq:joins-gain} is therefore $O((n/K)\log\kappa+\mu nK)=O(n/K^q)$, as claimed.
+
+It remains to pass from individual choices of tests to the counts \(W_I\).
+On each interval with \(Q_I>0\), choose a test whose adjusted gain is
+at least \(Q_I-1\). Such a test exists by the definition of the supremum.
+Summing \eqref{eq:count-scalar} and applying \eqref{eq:count-partition} gives
+\[
+ \sum_I Q_I\ge \frac{c}{K^q}\sum_I W_I
+                 -\frac{C}{K^q}\sum_I V_I-|\mathcal I|
+ \ge \frac{c}{K^q}\sum_I W_I-\frac{Cn}{K^q}.
+\]
+The cost of approximating the suprema is at most
+\(|\mathcal I|=O(n/K)\). Using these tests in \eqref{eq:physical-simultaneous}
+proves \eqref{eq:count-joint}.
 \par\smallskip
 \noindent\emph{AI disclosure.} OpenAI Codex assisted in developing the proof and writing the manuscript.
 

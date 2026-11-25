@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sharp Ω(κ^(1/p_sil) log(1/ε)) Lower Bound for Gradient Descent on Strongly Convex Objectives</title>
+  <link rel="canonical" href="https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/">
+  <link rel="alternate" type="application/pdf" href="https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/manuscript.pdf" title="Full manuscript">
+  <meta name="citation_title" content="Sharp Ω(κ^(1/p_sil) log(1/ε)) Lower Bound for Gradient Descent on Strongly Convex Objectives">
+  <meta name="citation_author" content="Ye, Yuhan">
+  <meta name="citation_publication_date" content="2026/11/25">
+  <meta name="citation_pdf_url" content="https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/manuscript.pdf">
+  <meta name="citation_abstract_html_url" content="https://yeyuhanyyh.github.io/strongly-convex-silver-lower-bound/">
+  <meta name="description" content="A sharp iteration lower bound for gradient descent with predetermined real stepsizes on smooth strongly convex functions.">
+  <style>
+    :root { color-scheme: light dark; --paper: #faf9f5; --ink: #242723; --muted: #555c55; --accent: #215843; --rule: #c8d0c5; }
+    @media (prefers-color-scheme: dark) {
+      :root { --paper: #1c201d; --ink: #edf0e8; --muted: #bbc6ba; --accent: #a3dcb9; --rule: #424d43; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 1.12rem/1.67 "STIX Two Text", Georgia, serif; }
+    main { max-width: 51rem; margin: 0 auto; padding: clamp(2rem, 7vw, 5.5rem) clamp(1.25rem, 5vw, 3.25rem); }
+    h1 { margin: 0 0 1rem; font-weight: 500; font-size: clamp(1.85rem, 4.5vw, 2.85rem); line-height: 1.22; text-wrap: balance; }
+    h2 { font-size: 1.38rem; margin: 2.1rem 0 .6rem; }
+    .byline, .resources, footer { font-family: "Source Sans 3", system-ui, sans-serif; }
+    .byline { margin: .8rem 0 0; font-size: 1.05rem; }
+    .date, footer { font-size: .9rem; color: var(--muted); }
+    .date { margin: .12rem 0 1.4rem; }
+    .resources { display: flex; flex-wrap: wrap; gap: .35rem 1.5rem; margin: 0; padding: 0 0 1rem; border-bottom: 1px solid var(--rule); font-size: .98rem; }
+    p { margin: .6rem 0 1rem; }
+    a { color: var(--accent); text-underline-offset: .17em; }
+    a:hover { text-decoration-thickness: 2px; }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .math { white-space: nowrap; font-family: "STIX Two Text", "Cambria Math", Georgia, serif; }
+    sup, sub { font-size: .68em; line-height: 0; }
+    footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+  </style>
+</head>
+<body>
+<main>
+  <article>
+    <header>
+      <h1>Sharp <span class="math">Ω(<i>κ</i><sup>1/<i>p</i><sub>sil</sub></sup> log(1/<i>ε</i>))</span> Lower Bound for Gradient Descent on Strongly Convex Objectives</h1>
+      <p class="byline"><a rel="author" href="https://yeyuhanyyh.github.io/">Yuhan Ye</a></p>
+      <p class="date">Version 0.3 · <time datetime="2026-11-25">November 25, 2026</time></p>
+      <nav class="resources" aria-label="Manuscript files">
+        <a href="manuscript.pdf" type="application/pdf">Read the PDF</a>
+        <a href="manuscript.tex">LaTeX source</a>
+        <a href="https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound">GitHub repository</a>
+      </nav>
+    </header>
+    <section aria-labelledby="abstract">
+      <h2 id="abstract">Abstract</h2>
+      <p>Altschuler and Parrilo <a href="https://doi.org/10.1145/3708502">[AP25a]</a> showed that their <em>silver stepsize schedule</em> accelerates gradient descent (GD) on smooth strongly convex functions. To halve the error, it improves the classical <span class="math"><i>O</i>(<i>κ</i>)</span> iteration bound to <span class="math"><i>O</i>(<i>κ</i><sup>1/<i>p</i><sub>sil</sub></sup>)</span>, where <i>κ</i> is the condition number and <span class="math"><i>p</i><sub>sil</sub> = log<sub>2</sub>(1 + √2)</span>. For nonnegative stepsizes, Liu and Ye <a href="https://arxiv.org/abs/2609.26873v2">[LY26]</a> matched this bound up to a subpolynomial factor in <i>κ</i>.</p>
+      <p>In this paper, we prove that GD with any predetermined sequence of real stepsizes requires <span class="math">Ω(<i>κ</i><sup>1/<i>p</i><sub>sil</sub></sup> log(1/<i>ε</i>))</span> iterations in the worst case to reduce either the squared distance to the minimizer or function suboptimality by a factor <i>ε</i>. For <span class="math">0 &lt; <i>ε</i> ≤ 1/2</span>, this matches the silver upper bound up to an absolute constant.</p>
+    </section>
+  </article>
+  <footer>
+    First posted <time datetime="2026-11-24">November 24, 2026</time>, for <a href="https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound/tree/v0.1">nonnegative stepsizes</a>. The <a href="https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound/tree/v0.2">real-stepsize result</a> first appeared November 25.
+  </footer>
+</main>
+</body>
+</html>
