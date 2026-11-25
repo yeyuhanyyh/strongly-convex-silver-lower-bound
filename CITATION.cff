@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "Please cite the manuscript and include the version tag or commit hash."
+title: "A sharp silver lower bound for gradient descent on strongly convex functions"
+type: generic
+authors:
+  - family-names: Ye
+    given-names: Yuhan
+version: "0.1"
+date-released: 2026-11-24
+url: "https://github.com/yeyuhanyyh/strongly-convex-silver-lower-bound"
+keywords:
+  - gradient descent
+  - convex optimization
+  - iteration complexity
+  - stepsize schedules
